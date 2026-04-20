@@ -18,9 +18,9 @@ app.add_middleware(
 )
 
 app.include_router(providers.router)
+app.include_router(discovery.router)  # before agents to prevent /featured matching /{agent_id}
 app.include_router(agents.router)
 app.include_router(consumers.router)
-app.include_router(discovery.router)
 app.include_router(gateway.router)
 
 

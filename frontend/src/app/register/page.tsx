@@ -137,7 +137,7 @@ export default function RegisterPage() {
         endpoint_url: pForm.endpoint,
         protocol_type: pForm.protocol,
         auth_type: pForm.authType,
-        auth_credentials: pForm.authKey ? { key: pForm.authKey } : undefined,
+        auth_credentials: pForm.authKey || null,
       });
       setCreatedAgentName(agent.data.name);
       setProviderStep(3);

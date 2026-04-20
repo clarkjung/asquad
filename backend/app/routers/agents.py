@@ -2,6 +2,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from pydantic import BaseModel
 
 from app.database import get_db
 from app.dependencies import get_current_provider
@@ -12,6 +13,21 @@ from app.services import registry
 from app.services.metering import get_agent_stats
 
 router = APIRouter(prefix="/api/v1/agents", tags=["agents"])
+
+
+class EndpointValidateRequest(BaseModel):
+    url: str
+
+
+@router.post("/validate-endpoint")
+async def validate_endpoint(data: EndpointValidateRequest):
+    import httpx
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            r = await client.get(data.url)
+            return {"ok": True, "status_code": r.status_code}
+    except Exception:
+        return {"ok": False, "status_code": None}
 
 
 @router.post("", response_model=AgentResponse, status_code=201)
