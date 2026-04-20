@@ -1,10 +1,9 @@
 import math
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, text
+from sqlalchemy import select, text, or_
 
 from app.models.agent import Agent
 from app.schemas.agent import AgentSearchResult, AgentResponse
-from app.utils.embedding import generate_embedding
 
 
 async def search_agents(
@@ -12,35 +11,51 @@ async def search_agents(
     query: str,
     limit: int = 10,
 ) -> list[AgentSearchResult]:
-    embedding = await generate_embedding(query)
-    vec_str = "[" + ",".join(str(x) for x in embedding) + "]"
-
+    # Keyword search using PostgreSQL full-text search across name, description, skills
+    # TODO: replace with OpenAI embedding (text-embedding-3-small) for semantic search
     sql = text("""
-        SELECT id, 1 - (embedding <=> :vec::vector) AS cosine_sim
+        SELECT id,
+               ts_rank(
+                 to_tsvector('english', name || ' ' || description || ' ' || skills::text),
+                 plainto_tsquery('english', :query)
+               ) AS rank
         FROM agents
-        WHERE status = 'active' AND embedding IS NOT NULL
-        ORDER BY embedding <=> :vec::vector
+        WHERE status = 'active'
+          AND to_tsvector('english', name || ' ' || description || ' ' || skills::text)
+              @@ plainto_tsquery('english', :query)
+        ORDER BY rank DESC
         LIMIT :limit
     """)
-    rows = (await db.execute(sql, {"vec": vec_str, "limit": limit * 2})).fetchall()
+    rows = (await db.execute(sql, {"query": query, "limit": limit * 2})).fetchall()
 
+    # Fall back to ILIKE if full-text returns nothing (e.g. single-char queries)
     if not rows:
-        return []
+        pattern = f"%{query}%"
+        fallback = await db.execute(
+            select(Agent).where(
+                Agent.status == "active",
+                or_(
+                    Agent.name.ilike(pattern),
+                    Agent.description.ilike(pattern),
+                )
+            ).limit(limit)
+        )
+        agents = list(fallback.scalars().all())
+        return [AgentSearchResult(agent=AgentResponse.model_validate(a), score=0.5) for a in agents]
 
     max_calls = 1
-    results = []
+    agent_map: dict = {}
     for row in rows:
         agent = await db.get(Agent, row.id)
         if agent and agent.status == "active":
+            agent_map[row.id] = (agent, row.rank)
             if agent.total_calls > max_calls:
                 max_calls = agent.total_calls
 
-    for row in rows:
-        agent = await db.get(Agent, row.id)
-        if not agent or agent.status != "active":
-            continue
+    results = []
+    for agent_id, (agent, rank) in agent_map.items():
         norm_calls = math.log(agent.total_calls + 1) / math.log(max_calls + 1)
-        score = 0.7 * row.cosine_sim + 0.2 * norm_calls + 0.1 * agent.success_rate
+        score = 0.7 * float(rank) + 0.2 * norm_calls + 0.1 * agent.success_rate
         results.append(AgentSearchResult(agent=AgentResponse.model_validate(agent), score=round(score, 4)))
 
     results.sort(key=lambda r: r.score, reverse=True)
