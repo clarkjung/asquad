@@ -6,7 +6,8 @@ import { usePathname } from "next/navigation";
 import Btn from "./ui/Btn";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Marketplace" },
+  { href: "/", label: "Home" },
+  { href: "/marketplace", label: "Marketplace" },
   { href: "/provider/dashboard", label: "Provider" },
   { href: "/consumer/dashboard", label: "Consumer" },
 ];

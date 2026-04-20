@@ -54,3 +54,6 @@ class ConsumerUsageResponse(BaseModel):
     calls_this_week: int
     calls_this_month: int
     top_agents: list[dict]
+    calls_last_minute: int
+    limit_rpm: int
+    remaining_rpm: int

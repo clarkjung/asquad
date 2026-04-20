@@ -13,6 +13,7 @@ from app.schemas.consumer import (
 )
 from app.utils.auth import hash_password, verify_password, create_access_token, generate_api_key
 from app.services.metering import get_consumer_usage
+from app.services.rate_limit import check_rate_limit
 
 router = APIRouter(prefix="/api/v1/consumers", tags=["consumers"])
 
@@ -94,4 +95,11 @@ async def usage(
     consumer: Consumer = Depends(get_current_consumer),
     db: AsyncSession = Depends(get_db),
 ):
-    return await get_consumer_usage(db, consumer.id)
+    usage_data = await get_consumer_usage(db, consumer.id)
+    rate = await check_rate_limit(db, consumer)
+    return {
+        **usage_data,
+        "calls_last_minute": rate["calls_last_minute"],
+        "limit_rpm": rate["limit_rpm"],
+        "remaining_rpm": rate["remaining"],
+    }

@@ -27,6 +27,9 @@ interface Usage {
   week_calls: number;
   total_tokens: number;
   agent_usage: AgentUsage[];
+  calls_last_minute: number;
+  limit_rpm: number;
+  remaining_rpm: number;
 }
 
 // ── Sidebar Link ──────────────────────────────────────────────────────────
@@ -86,6 +89,9 @@ export default function ConsumerDashboard() {
           call_count: a.call_count,
           token_count: 0,
         })) ?? [],
+        calls_last_minute: u.calls_last_minute ?? 0,
+        limit_rpm: u.limit_rpm ?? 60,
+        remaining_rpm: u.remaining_rpm ?? 60,
       });
     } catch { /* backend may be down */ }
   };
@@ -149,11 +155,34 @@ export default function ConsumerDashboard() {
           </div>
 
           {/* Stats */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginBottom: 24 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 24 }}>
             <StatCard label="Total Calls" value={(usage?.total_calls ?? 0).toLocaleString()} sub="All time" />
-            <StatCard label="This Week" value={(usage?.week_calls ?? 0).toLocaleString()} sub="+8% vs last week" />
-            <StatCard label="Total Tokens" value={usage ? `${(usage.total_tokens / 1_000_000).toFixed(1)}M` : "—"} sub="Consumed" accent />
+            <StatCard label="This Week" value={(usage?.week_calls ?? 0).toLocaleString()} sub="Last 7 days" />
+            <StatCard label="Total Tokens" value={usage ? `${(usage.total_tokens / 1_000_000).toFixed(1)}M` : "—"} sub="Consumed" />
+            <StatCard label="Rate Limit" value={usage ? `${usage.remaining_rpm}/${usage.limit_rpm}` : "—"} sub="Remaining this minute" accent={usage ? usage.remaining_rpm > 0 : true} />
           </div>
+
+          {/* Rate limit bar */}
+          {usage && (
+            <Card style={{ marginBottom: 16, padding: "16px 20px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--t2)" }}>Rate Limit Usage (last 60s)</div>
+                <div style={{ fontSize: 12, color: usage.remaining_rpm === 0 ? "var(--red)" : "var(--t3)" }}>
+                  {usage.calls_last_minute} / {usage.limit_rpm} calls/min
+                  {usage.remaining_rpm === 0 && <span style={{ marginLeft: 8, color: "var(--red)", fontWeight: 600 }}>● Limit reached</span>}
+                </div>
+              </div>
+              <div style={{ height: 6, background: "var(--bg3)", borderRadius: 3 }}>
+                <div style={{
+                  height: "100%",
+                  width: `${Math.min(100, (usage.calls_last_minute / usage.limit_rpm) * 100)}%`,
+                  background: usage.remaining_rpm === 0 ? "var(--red)" : usage.calls_last_minute / usage.limit_rpm > 0.8 ? "var(--amber)" : "var(--green)",
+                  borderRadius: 3,
+                  transition: "width 0.4s ease",
+                }} />
+              </div>
+            </Card>
+          )}
 
           {/* Chart + Agent breakdown */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>

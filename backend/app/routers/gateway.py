@@ -8,6 +8,7 @@ from app.models.consumer import Consumer
 from app.schemas.a2a import A2ARequest, A2AResponse
 from app.services import registry
 from app.services.gateway import call_agent
+from app.services.rate_limit import check_rate_limit
 
 router = APIRouter(tags=["gateway"])
 
@@ -19,6 +20,14 @@ async def a2a_call(
     consumer: Consumer = Depends(get_consumer_by_api_key),
     db: AsyncSession = Depends(get_db),
 ):
+    rate = await check_rate_limit(db, consumer)
+    if rate["exceeded"]:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Rate limit exceeded: {rate['limit_rpm']} calls/minute allowed. Retry in 60 seconds.",
+            headers={"Retry-After": "60", "X-RateLimit-Limit": str(rate["limit_rpm"]), "X-RateLimit-Remaining": "0"},
+        )
+
     agent = await registry.get_agent(db, agent_id)
     if agent.status != "active":
         raise HTTPException(status_code=503, detail="Agent is not active")

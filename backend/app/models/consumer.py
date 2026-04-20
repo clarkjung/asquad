@@ -12,6 +12,7 @@ class Consumer(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     company_name: Mapped[str] = mapped_column(String(255), nullable=False)
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    rate_limit_rpm: Mapped[int] = mapped_column(default=60)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
     )
