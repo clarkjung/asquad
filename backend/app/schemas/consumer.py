@@ -57,3 +57,5 @@ class ConsumerUsageResponse(BaseModel):
     calls_last_minute: int
     limit_rpm: int
     remaining_rpm: int
+    chart_data: list[int] = []
+    chart_labels: list[str] = []

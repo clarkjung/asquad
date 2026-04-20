@@ -30,6 +30,8 @@ interface Usage {
   calls_last_minute: number;
   limit_rpm: number;
   remaining_rpm: number;
+  chart_data: number[];
+  chart_labels: string[];
 }
 
 // ── Sidebar Link ──────────────────────────────────────────────────────────
@@ -62,8 +64,6 @@ export default function ConsumerDashboard() {
   const [newKeyName, setNewKeyName] = useState("");
   const [creating, setCreating] = useState(false);
 
-  const CHART_DATA = [28, 34, 19, 45, 38, 22, 7];
-  const CHART_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   useEffect(() => {
     const role = localStorage.getItem("role");
@@ -92,6 +92,8 @@ export default function ConsumerDashboard() {
         calls_last_minute: u.calls_last_minute ?? 0,
         limit_rpm: u.limit_rpm ?? 60,
         remaining_rpm: u.remaining_rpm ?? 60,
+        chart_data: u.chart_data ?? [0, 0, 0, 0, 0, 0, 0],
+        chart_labels: u.chart_labels ?? ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
       });
     } catch { /* backend may be down */ }
   };
@@ -188,7 +190,7 @@ export default function ConsumerDashboard() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
             <Card>
               <div style={{ fontSize: 14, fontWeight: 600, color: "var(--t1)", marginBottom: 20 }}>Calls This Week</div>
-              <MiniChart data={CHART_DATA} labels={CHART_LABELS} color="var(--green)" />
+              <MiniChart data={usage?.chart_data ?? [0,0,0,0,0,0,0]} labels={usage?.chart_labels ?? ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]} color="var(--green)" />
             </Card>
             <Card>
               <div style={{ fontSize: 14, fontWeight: 600, color: "var(--t1)", marginBottom: 16 }}>Top Agents Used</div>

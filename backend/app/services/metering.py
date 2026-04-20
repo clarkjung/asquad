@@ -156,10 +156,34 @@ async def get_consumer_usage(db: AsyncSession, consumer_id: uuid.UUID) -> dict:
     """)
     top_rows = (await db.execute(top_sql, {"consumer_id": str(consumer_id)})).fetchall()
 
+    # 7-day chart
+    chart_sql = text("""
+        SELECT
+            TO_CHAR(DATE_TRUNC('day', time AT TIME ZONE 'UTC'), 'Dy') AS day_label,
+            COUNT(*) AS cnt
+        FROM call_events
+        WHERE consumer_id = :consumer_id
+          AND time >= NOW() - INTERVAL '7 days'
+        GROUP BY DATE_TRUNC('day', time AT TIME ZONE 'UTC'), day_label
+        ORDER BY DATE_TRUNC('day', time AT TIME ZONE 'UTC')
+    """)
+    chart_rows = (await db.execute(chart_sql, {"consumer_id": str(consumer_id)})).fetchall()
+    chart_map = {r.day_label: int(r.cnt) for r in chart_rows}
+
+    from datetime import date, timedelta
+    labels, data = [], []
+    for i in range(6, -1, -1):
+        d = date.today() - timedelta(days=i)
+        label = d.strftime("%a")
+        labels.append(label)
+        data.append(chart_map.get(label, 0))
+
     return {
         "total_calls": row.total_calls if row else 0,
         "calls_today": row.calls_today if row else 0,
         "calls_this_week": row.calls_week if row else 0,
         "calls_this_month": row.calls_month if row else 0,
         "top_agents": [{"agent_id": r.agent_id, "call_count": r.cnt} for r in top_rows],
+        "chart_data": data,
+        "chart_labels": labels,
     }
