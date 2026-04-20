@@ -89,8 +89,8 @@ export default function TopNav() {
 
       {/* Auth buttons */}
       <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-        <Btn variant="ghost" size="sm" onClick={() => (window.location.href = "/consumer/login")}>Sign In</Btn>
-        <Btn size="sm" onClick={() => (window.location.href = "/consumer/register")}>Get Started</Btn>
+        <Btn variant="ghost" size="sm" onClick={() => (window.location.href = "/register?mode=signin")}>Sign In</Btn>
+        <Btn size="sm" onClick={() => (window.location.href = "/register")}>Get Started</Btn>
       </div>
     </nav>
   );

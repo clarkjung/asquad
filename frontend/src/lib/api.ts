@@ -23,6 +23,7 @@ export const agentsApi = {
   update: (id: string, data: object) => api.put(`/api/v1/agents/${id}`, data),
   delete: (id: string) => api.delete(`/api/v1/agents/${id}`),
   stats: (id: string) => api.get(`/api/v1/agents/${id}/stats`),
+  validateEndpoint: (url: string) => api.post(`/api/v1/agents/validate-endpoint`, { url }),
 };
 
 export const providersApi = {
