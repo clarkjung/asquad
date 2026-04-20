@@ -11,7 +11,7 @@ export interface Agent {
   provider: string;
   description: string;
   skills: string[];
-  protocol: "a2a" | "rest";
+  protocol_type: "a2a" | "rest";
   total_calls: number;
   avg_latency_ms: number;
   success_rate: number;
@@ -48,7 +48,7 @@ export default function AgentCard({ agent, onClick }: AgentCardProps) {
             <div style={{ fontSize: 12, color: "var(--t3)" }}>{agent.provider}</div>
           </div>
         </div>
-        <Badge color={agent.protocol === "a2a" ? "blue" : "default"}>{agent.protocol === "a2a" ? "A2A" : "REST"}</Badge>
+        <Badge color={agent.protocol_type === "a2a" ? "blue" : "default"}>{agent.protocol_type === "a2a" ? "A2A" : "REST"}</Badge>
       </div>
       <p style={{ fontSize: 13, color: "var(--t2)", lineHeight: 1.5, flex: 1, margin: 0 }}>{agent.description}</p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>

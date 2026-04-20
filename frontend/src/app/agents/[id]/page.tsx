@@ -12,7 +12,7 @@ interface AgentFull {
   description: string;
   skills: string[];
   category: string;
-  protocol: "a2a" | "rest";
+  protocol_type: "a2a" | "rest";
   total_calls: number;
   avg_latency_ms: number;
   success_rate: number;
@@ -120,8 +120,8 @@ export default function AgentDetailPage() {
     provider: { organization: agent.provider_name ?? "Unknown" },
     skills: agent.skills.map((s) => ({ id: s, name: s })),
     endpoint: `https://api.asquad.ai/v1/agents/${agent.id}/a2a`,
-    protocol: agent.protocol,
-    capabilities: { streaming: agent.protocol === "a2a", async: false },
+    protocol: agent.protocol_type,
+    capabilities: { streaming: agent.protocol_type === "a2a", async: false },
   };
 
   const pythonCode = `import httpx
@@ -180,7 +180,7 @@ print(response.json())`;
                       {agent.name}
                     </h1>
                     <Badge color={agent.status === "active" ? "green" : "amber"}>{agent.status ?? "active"}</Badge>
-                    <Badge color={agent.protocol === "a2a" ? "blue" : "default"}>{agent.protocol.toUpperCase()}</Badge>
+                    <Badge color={agent.protocol_type === "a2a" ? "blue" : "default"}>{(agent.protocol_type ?? "rest").toUpperCase()}</Badge>
                   </div>
                   <div style={{ fontSize: 13, color: "var(--t3)", marginBottom: 10 }}>by {agent.provider_name ?? "Unknown"}</div>
                   <p style={{ fontSize: 15, color: "var(--t2)", lineHeight: 1.6, margin: 0 }}>{agent.description}</p>
@@ -263,7 +263,7 @@ print(response.json())`;
               <div style={{ fontSize: 12, fontWeight: 600, color: "var(--t3)", marginBottom: 14, letterSpacing: "0.05em" }}>AGENT INFO</div>
               {[
                 { label: "Category", value: agent.category },
-                { label: "Protocol", value: agent.protocol.toUpperCase() },
+                { label: "Protocol", value: (agent.protocol_type ?? "rest").toUpperCase() },
                 { label: "Status", value: agent.status ?? "active" },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
