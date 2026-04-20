@@ -55,3 +55,6 @@ class AgentStatsResponse(BaseModel):
     calls_today: int
     calls_this_week: int
     calls_this_month: int
+    chart_data: list[int] = []
+    chart_labels: list[str] = []
+    recent_calls: list[dict] = []

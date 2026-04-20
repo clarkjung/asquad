@@ -71,6 +71,55 @@ async def get_agent_stats(db: AsyncSession, agent_id: uuid.UUID) -> dict:
     """)
     row = (await db.execute(base, {"agent_id": str(agent_id)})).fetchone()
     agent = await db.get(Agent, agent_id)
+
+    # 7-day chart: calls per day for last 7 days
+    chart_sql = text("""
+        SELECT
+            TO_CHAR(DATE_TRUNC('day', time AT TIME ZONE 'UTC'), 'Dy') AS day_label,
+            COUNT(*) AS cnt
+        FROM call_events
+        WHERE agent_id = :agent_id
+          AND time >= NOW() - INTERVAL '7 days'
+        GROUP BY DATE_TRUNC('day', time AT TIME ZONE 'UTC'), day_label
+        ORDER BY DATE_TRUNC('day', time AT TIME ZONE 'UTC')
+    """)
+    chart_rows = (await db.execute(chart_sql, {"agent_id": str(agent_id)})).fetchall()
+    chart_map = {r.day_label: int(r.cnt) for r in chart_rows}
+
+    from datetime import date, timedelta
+    labels = []
+    data = []
+    for i in range(6, -1, -1):
+        d = date.today() - timedelta(days=i)
+        label = d.strftime("%a")
+        labels.append(label)
+        data.append(chart_map.get(label, 0))
+
+    # Recent calls: last 10 events
+    recent_sql = text("""
+        SELECT
+            time,
+            consumer_id::text,
+            status,
+            latency_ms,
+            error_message
+        FROM call_events
+        WHERE agent_id = :agent_id
+        ORDER BY time DESC
+        LIMIT 10
+    """)
+    recent_rows = (await db.execute(recent_sql, {"agent_id": str(agent_id)})).fetchall()
+    recent_calls = [
+        {
+            "time": r.time.isoformat(),
+            "consumer": r.consumer_id[:8],
+            "status": r.status,
+            "latency_ms": r.latency_ms,
+            "error_message": r.error_message,
+        }
+        for r in recent_rows
+    ]
+
     return {
         "agent_id": agent_id,
         "total_calls": agent.total_calls if agent else 0,
@@ -79,6 +128,9 @@ async def get_agent_stats(db: AsyncSession, agent_id: uuid.UUID) -> dict:
         "calls_today": row.calls_today if row else 0,
         "calls_this_week": row.calls_week if row else 0,
         "calls_this_month": row.calls_month if row else 0,
+        "chart_data": data,
+        "chart_labels": labels,
+        "recent_calls": recent_calls,
     }
 
 

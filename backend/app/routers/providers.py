@@ -3,8 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.database import get_db
+from app.dependencies import get_current_provider
 from app.models.provider import Provider
+from app.models.agent import Agent
 from app.schemas.provider import ProviderRegister, ProviderLogin, ProviderResponse, TokenResponse
+from app.schemas.agent import AgentResponse
 from app.utils.auth import hash_password, verify_password, create_access_token
 
 router = APIRouter(prefix="/api/v1/providers", tags=["providers"])
@@ -37,3 +40,21 @@ async def login(data: ProviderLogin, db: AsyncSession = Depends(get_db)):
 
     token = create_access_token(str(provider.id), role="provider")
     return TokenResponse(access_token=token, provider=ProviderResponse.model_validate(provider))
+
+
+@router.get("/me", response_model=ProviderResponse)
+async def get_me(provider: Provider = Depends(get_current_provider)):
+    return provider
+
+
+@router.get("/my-agents", response_model=list[AgentResponse])
+async def my_agents(
+    provider: Provider = Depends(get_current_provider),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Agent)
+        .where(Agent.provider_id == provider.id, Agent.status != "inactive")
+        .order_by(Agent.created_at.desc())
+    )
+    return list(result.scalars().all())

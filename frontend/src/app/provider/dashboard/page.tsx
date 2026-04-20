@@ -74,29 +74,34 @@ export default function ProviderDashboard() {
 
   const loadData = async () => {
     try {
-      // Load agents — using browse as a fallback (MVP: no provider-specific endpoint yet)
-      const r = await agentsApi.browse(undefined, 10);
-      const list = r.data as Agent[];
+      const [meR, agentsR] = await Promise.all([
+        providersApi.me(),
+        providersApi.myAgents(),
+      ]);
+      setCompanyName(meR.data.company_name ?? "Provider");
+      const list = agentsR.data as Agent[];
       setAgents(list);
+
       if (list.length > 0) {
         const a = list[0];
         setAgentStatus(a.status);
-        // Build mock stats from first agent
+        const statsR = await agentsApi.stats(a.id);
+        const s = statsR.data;
         setStats({
-          total_calls: a.total_calls,
-          week_calls: Math.round(a.total_calls * 0.23),
-          today_calls: Math.round(a.total_calls * 0.04),
-          avg_latency: a.avg_latency_ms,
-          success_rate: a.success_rate,
-          chart_data: [42, 38, 56, 71, 48, 63, 47],
-          chart_labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-          recent_calls: [
-            { id: "c1", time: "2 min ago", consumer: "anon_8f2a", status: "success", latency: 791 },
-            { id: "c2", time: "5 min ago", consumer: "consumer_3c4d", status: "success", latency: 843 },
-            { id: "c3", time: "12 min ago", consumer: "anon_1b9e", status: "error", latency: 30000 },
-            { id: "c4", time: "18 min ago", consumer: "consumer_7a2f", status: "success", latency: 812 },
-            { id: "c5", time: "31 min ago", consumer: "anon_4d8c", status: "success", latency: 779 },
-          ],
+          total_calls: s.total_calls,
+          week_calls: s.calls_this_week,
+          today_calls: s.calls_today,
+          avg_latency: Math.round(s.avg_latency_ms),
+          success_rate: s.success_rate,
+          chart_data: s.chart_data?.length ? s.chart_data : [0, 0, 0, 0, 0, 0, 0],
+          chart_labels: s.chart_labels?.length ? s.chart_labels : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          recent_calls: (s.recent_calls ?? []).map((c: { time: string; consumer: string; status: string; latency_ms: number }, i: number) => ({
+            id: String(i),
+            time: new Date(c.time).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+            consumer: c.consumer,
+            status: c.status as "success" | "error",
+            latency: c.latency_ms,
+          })),
         });
       }
     } catch { /* not logged in or backend down */ }

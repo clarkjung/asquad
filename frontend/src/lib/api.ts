@@ -29,6 +29,8 @@ export const agentsApi = {
 export const providersApi = {
   register: (data: object) => api.post(`/api/v1/providers/register`, data),
   login: (data: object) => api.post(`/api/v1/providers/login`, data),
+  me: () => api.get(`/api/v1/providers/me`),
+  myAgents: () => api.get(`/api/v1/providers/my-agents`),
 };
 
 export const consumersApi = {
