@@ -2,67 +2,104 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { agentsApi } from "@/lib/api";
+import TopNav from "@/components/TopNav";
+import { Btn, Badge, Card, StatCard, MiniChart, SuccessBar, LatencyBar } from "@/components/ui";
+import { agentsApi, providersApi } from "@/lib/api";
 
 interface Agent {
   id: string;
   name: string;
-  description: string;
-  skills: string[];
   category: string;
   status: string;
   total_calls: number;
   avg_latency_ms: number;
   success_rate: number;
-  protocol_type: string;
-  auth_type: string;
-  agent_card: object;
 }
 
-const CATEGORIES = ["General", "Customer Support", "Developer Tools", "Sales & Marketing", "Legal"];
+interface CallEvent {
+  id: string;
+  time: string;
+  consumer: string;
+  status: "success" | "error";
+  latency: number;
+}
+
+interface Stats {
+  total_calls: number;
+  week_calls: number;
+  today_calls: number;
+  avg_latency: number;
+  success_rate: number;
+  chart_data: number[];
+  chart_labels: string[];
+  recent_calls: CallEvent[];
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────
+
+type NavItem = { label: string; icon: string; badge?: string };
+
+function SidebarLink({ label, icon, badge, active }: NavItem & { active?: boolean }) {
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      padding: "8px 20px", cursor: "pointer",
+      background: active ? "var(--accent-dim)" : "transparent",
+      borderLeft: active ? "2px solid var(--accent)" : "2px solid transparent",
+      transition: "all 0.15s",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <span style={{ fontSize: 14, opacity: 0.7 }}>{icon}</span>
+        <span style={{ fontSize: 13, fontWeight: active ? 600 : 400, color: active ? "var(--t1)" : "var(--t2)" }}>{label}</span>
+      </div>
+      {badge && <span style={{ fontSize: 10, fontWeight: 700, background: "var(--accent)", color: "#fff", padding: "1px 6px", borderRadius: 8 }}>{badge}</span>}
+    </div>
+  );
+}
+
+// ── Provider Dashboard ────────────────────────────────────────────────────
 
 export default function ProviderDashboard() {
   const router = useRouter();
   const [agents, setAgents] = useState<Agent[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
-  const [form, setForm] = useState({
-    name: "", description: "", skills: "", category: "General",
-    endpoint_url: "", protocol_type: "rest", auth_type: "none", auth_credentials: "",
-  });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [agentStatus, setAgentStatus] = useState("active");
+  const [companyName, setCompanyName] = useState("Provider");
 
   useEffect(() => {
     const role = localStorage.getItem("role");
-    if (role !== "provider") { router.push("/provider/login"); return; }
-    loadAgents();
+    if (role !== "provider") { router.push("/register"); return; }
+    loadData();
   }, [router]);
 
-  const loadAgents = async () => {
-    // Agents for current provider – we use browse for now (MVP: all active agents shown)
-    // In Sprint 4 we'd add a provider-specific endpoint
-  };
-
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+  const loadData = async () => {
     try {
-      const r = await agentsApi.create({
-        ...form,
-        skills: form.skills.split(",").map((s) => s.trim()).filter(Boolean),
-      });
-      setAgents([r.data, ...agents]);
-      setShowForm(false);
-      setForm({ name: "", description: "", skills: "", category: "General", endpoint_url: "", protocol_type: "rest", auth_type: "none", auth_credentials: "" });
-    } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
-      setError(msg || "Failed to register agent.");
-    } finally {
-      setLoading(false);
-    }
+      // Load agents — using browse as a fallback (MVP: no provider-specific endpoint yet)
+      const r = await agentsApi.browse(undefined, 10);
+      const list = r.data as Agent[];
+      setAgents(list);
+      if (list.length > 0) {
+        const a = list[0];
+        setAgentStatus(a.status);
+        // Build mock stats from first agent
+        setStats({
+          total_calls: a.total_calls,
+          week_calls: Math.round(a.total_calls * 0.23),
+          today_calls: Math.round(a.total_calls * 0.04),
+          avg_latency: a.avg_latency_ms,
+          success_rate: a.success_rate,
+          chart_data: [42, 38, 56, 71, 48, 63, 47],
+          chart_labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          recent_calls: [
+            { id: "c1", time: "2 min ago", consumer: "anon_8f2a", status: "success", latency: 791 },
+            { id: "c2", time: "5 min ago", consumer: "consumer_3c4d", status: "success", latency: 843 },
+            { id: "c3", time: "12 min ago", consumer: "anon_1b9e", status: "error", latency: 30000 },
+            { id: "c4", time: "18 min ago", consumer: "consumer_7a2f", status: "success", latency: 812 },
+            { id: "c5", time: "31 min ago", consumer: "anon_4d8c", status: "success", latency: 779 },
+          ],
+        });
+      }
+    } catch { /* not logged in or backend down */ }
   };
 
   const handleLogout = () => {
@@ -71,101 +108,133 @@ export default function ProviderDashboard() {
     router.push("/");
   };
 
+  const firstAgent = agents[0];
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-blue-600">asquad.ai</Link>
-        <div className="flex gap-4 items-center">
-          <span className="text-sm text-gray-500">Provider Dashboard</span>
-          <button onClick={handleLogout} className="text-sm text-gray-400 hover:text-gray-600">Logout</button>
-        </div>
-      </header>
+    <div style={{ paddingTop: 56 }}>
+      <TopNav />
+      <div style={{ display: "flex", minHeight: "calc(100vh - 56px)" }}>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Your Agents</h2>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm font-medium"
-          >
-            + Register Agent
-          </button>
-        </div>
-
-        {showForm && (
-          <div className="bg-white border rounded-2xl p-6 mb-6">
-            <h3 className="text-lg font-semibold mb-4">Register New Agent</h3>
-            {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-            <form onSubmit={handleCreate} className="grid gap-3">
-              <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Agent Name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-              <textarea className="border rounded-lg px-3 py-2 text-sm" placeholder="Description (what does this agent do?)" rows={3} required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-              <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Skills (comma-separated: contract-review, nda-analysis)" required value={form.skills} onChange={(e) => setForm({ ...form, skills: e.target.value })} />
-              <select className="border rounded-lg px-3 py-2 text-sm" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-                {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-              </select>
-              <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Endpoint URL (https://...)" required value={form.endpoint_url} onChange={(e) => setForm({ ...form, endpoint_url: e.target.value })} />
-              <div className="grid grid-cols-2 gap-3">
-                <select className="border rounded-lg px-3 py-2 text-sm" value={form.protocol_type} onChange={(e) => setForm({ ...form, protocol_type: e.target.value })}>
-                  <option value="rest">REST</option>
-                  <option value="a2a">A2A Native</option>
-                </select>
-                <select className="border rounded-lg px-3 py-2 text-sm" value={form.auth_type} onChange={(e) => setForm({ ...form, auth_type: e.target.value })}>
-                  <option value="none">No Auth</option>
-                  <option value="api_key">API Key</option>
-                  <option value="bearer">Bearer Token</option>
-                </select>
-              </div>
-              {form.auth_type !== "none" && (
-                <input className="border rounded-lg px-3 py-2 text-sm" placeholder="Auth credentials" value={form.auth_credentials} onChange={(e) => setForm({ ...form, auth_credentials: e.target.value })} />
-              )}
-              <div className="flex gap-2">
-                <button type="submit" disabled={loading} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">{loading ? "Registering..." : "Register"}</button>
-                <button type="button" onClick={() => setShowForm(false)} className="border px-4 py-2 rounded-lg text-sm hover:bg-gray-50">Cancel</button>
-              </div>
-            </form>
+        {/* ── Sidebar ── */}
+        <div style={{ width: 220, flexShrink: 0, borderRight: "1px solid var(--border)", padding: "28px 0", position: "sticky", top: 56, height: "calc(100vh - 56px)", overflowY: "auto" }}>
+          <div style={{ padding: "0 20px 20px", borderBottom: "1px solid var(--border)", marginBottom: 8 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--t1)", letterSpacing: "-0.01em" }}>Provider Portal</div>
+            <div style={{ fontSize: 11, color: "var(--t3)", marginTop: 2 }}>{companyName}</div>
           </div>
-        )}
+          {[
+            { label: "Overview", icon: "◈", active: true },
+            { label: "My Agents", icon: "◎", badge: agents.length.toString() },
+            { label: "Usage Stats", icon: "▲" },
+            { label: "API Calls Log", icon: "≡" },
+            { label: "Settings", icon: "⚙" },
+          ].map((item) => <SidebarLink key={item.label} {...item} />)}
+          <div style={{ margin: "16px 12px 0", borderTop: "1px solid var(--border)", paddingTop: 16 }}>
+            <button onClick={handleLogout} style={{ width: "100%", padding: "8px", fontSize: 12, color: "var(--t3)", background: "none", border: "1px solid var(--border)", borderRadius: 6, cursor: "pointer", fontFamily: "inherit" }}>
+              Sign Out
+            </button>
+          </div>
+        </div>
 
-        {selectedAgent && (
-          <div className="bg-white border rounded-2xl p-6 mb-6">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-semibold">Agent Card — {selectedAgent.name}</h3>
-              <button onClick={() => setSelectedAgent(null)} className="text-gray-400 hover:text-gray-600 text-sm">Close</button>
+        {/* ── Main ── */}
+        <div style={{ flex: 1, minWidth: 0, padding: "32px 40px", overflowY: "auto" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
+            <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--t1)", margin: 0 }}>Overview</h1>
+            <div style={{ display: "flex", gap: 10 }}>
+              <Btn variant="ghost" size="sm" onClick={() => router.push(`/agents/${firstAgent?.id}`)}>Edit Agent</Btn>
+              <Btn size="sm" onClick={() => router.push("/register?mode=provider")}>+ Register New Agent</Btn>
             </div>
-            <pre className="bg-gray-50 rounded-lg p-4 text-xs overflow-auto max-h-64">
-              {JSON.stringify(selectedAgent.agent_card, null, 2)}
-            </pre>
           </div>
-        )}
 
-        {agents.length === 0 && !showForm && (
-          <div className="text-center py-16 text-gray-400">
-            <p>No agents registered yet.</p>
-            <p className="text-sm mt-1">Click &quot;Register Agent&quot; to add your first agent.</p>
-          </div>
-        )}
+          {stats ? (
+            <>
+              {/* Stats row */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 24 }}>
+                <StatCard label="Total Calls" value={stats.total_calls.toLocaleString()} sub="All time" />
+                <StatCard label="This Week" value={stats.week_calls.toLocaleString()} sub="+12% vs last week" />
+                <StatCard label="Today" value={stats.today_calls.toString()} sub="Live" accent />
+                <StatCard label="Avg Latency" value={`${stats.avg_latency}ms`} sub="Last 30 days" />
+              </div>
 
-        <div className="grid gap-4">
-          {agents.map((agent) => (
-            <div key={agent.id} className="bg-white border rounded-xl p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-gray-900">{agent.name}</h3>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${agent.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>{agent.status}</span>
+              {/* Chart + Agent info */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 16, marginBottom: 16 }}>
+                <Card>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "var(--t1)" }}>Calls This Week</div>
+                    <Badge color="green">{Math.round(stats.success_rate * 100)}% uptime</Badge>
                   </div>
-                  <p className="text-sm text-gray-500 mt-1">{agent.description}</p>
-                </div>
-                <div className="text-right text-xs text-gray-400">
-                  <div>{agent.total_calls} calls</div>
-                  <div>{Math.round(agent.avg_latency_ms)}ms</div>
-                  <button onClick={() => setSelectedAgent(agent)} className="text-blue-500 hover:underline mt-1 block">View Card</button>
-                </div>
+                  <MiniChart data={stats.chart_data} labels={stats.chart_labels} />
+                </Card>
+
+                {firstAgent && (
+                  <Card>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "var(--t3)", marginBottom: 14, letterSpacing: "0.04em" }}>YOUR AGENT</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                      <div style={{ width: 40, height: 40, borderRadius: 10, background: "var(--accent-dim)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, fontWeight: 800, color: "var(--accent)" }}>
+                        {firstAgent.name[0]}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 15, fontWeight: 700, color: "var(--t1)" }}>{firstAgent.name}</div>
+                        <div style={{ fontSize: 12, color: "var(--t3)" }}>{firstAgent.category}</div>
+                      </div>
+                    </div>
+                    <div style={{ marginBottom: 12 }}>
+                      <div style={{ fontSize: 12, color: "var(--t3)", marginBottom: 6 }}>Success Rate</div>
+                      <SuccessBar rate={firstAgent.success_rate} />
+                    </div>
+                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                      <Badge color={agentStatus === "active" ? "green" : "amber"}>{agentStatus}</Badge>
+                      <button
+                        onClick={() => setAgentStatus((v) => v === "active" ? "paused" : "active")}
+                        style={{ fontSize: 12, color: "var(--accent)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0 }}
+                      >
+                        {agentStatus === "active" ? "Pause" : "Activate"}
+                      </button>
+                    </div>
+                  </Card>
+                )}
               </div>
+
+              {/* Recent calls table */}
+              <Card style={{ padding: 0, overflow: "hidden" }}>
+                <div style={{ padding: "18px 24px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "var(--t1)" }}>Recent Calls</div>
+                  <Badge>Last 24h</Badge>
+                </div>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr style={{ background: "var(--bg3)" }}>
+                      {["Time", "Consumer", "Status", "Latency"].map((h) => (
+                        <th key={h} style={{ padding: "10px 24px", textAlign: "left", fontSize: 11, fontWeight: 600, color: "var(--t3)", letterSpacing: "0.05em" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stats.recent_calls.map((call, i) => (
+                      <tr key={call.id} style={{ borderTop: "1px solid var(--border)", background: i % 2 === 0 ? "transparent" : "rgba(0,0,0,0.015)" }}>
+                        <td style={{ padding: "12px 24px", fontSize: 13, color: "var(--t3)" }}>{call.time}</td>
+                        <td style={{ padding: "12px 24px", fontSize: 13, color: "var(--t2)", fontFamily: "monospace" }}>{call.consumer}</td>
+                        <td style={{ padding: "12px 24px" }}>
+                          <Badge color={call.status === "success" ? "green" : "red"}>{call.status}</Badge>
+                        </td>
+                        <td style={{ padding: "12px 24px" }}>
+                          {call.status === "success" ? <LatencyBar ms={call.latency} /> : <span style={{ fontSize: 13, color: "var(--red)" }}>timeout</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Card>
+            </>
+          ) : (
+            <div style={{ textAlign: "center", padding: "80px 0", color: "var(--t3)" }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>◎</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: "var(--t2)", marginBottom: 8 }}>No agents yet</div>
+              <div style={{ fontSize: 13, marginBottom: 24 }}>Register your first agent to see stats here.</div>
+              <Btn onClick={() => router.push("/register?mode=provider")}>Register Your Agent →</Btn>
             </div>
-          ))}
+          )}
         </div>
-      </main>
+      </div>
     </div>
   );
 }
