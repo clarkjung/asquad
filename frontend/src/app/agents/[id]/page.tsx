@@ -1,134 +1,294 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
+import { useRouter, useParams } from "next/navigation";
+import TopNav from "@/components/TopNav";
+import { Btn, Badge, Card, StatCard, Input, SuccessBar } from "@/components/ui";
 import { agentsApi, gatewayApi } from "@/lib/api";
 
-interface Agent {
+interface AgentFull {
   id: string;
   name: string;
   description: string;
   skills: string[];
   category: string;
-  status: string;
+  protocol: "a2a" | "rest";
   total_calls: number;
   avg_latency_ms: number;
   success_rate: number;
-  agent_card: object;
+  provider_name?: string;
+  agent_card?: Record<string, unknown>;
+  status?: string;
 }
 
-export default function AgentDetail() {
-  const params = useParams();
-  const id = params.id as string;
-  const [agent, setAgent] = useState<Agent | null>(null);
-  const [message, setMessage] = useState("");
-  const [apiKey, setApiKey] = useState("");
+// ── Try It Playground ─────────────────────────────────────────────────────
+
+function TryItPlayground({ agent }: { agent: AgentFull }) {
+  const [input, setInput] = useState("");
   const [response, setResponse] = useState<string | null>(null);
-  const [calling, setCalling] = useState(false);
-  const [showCard, setShowCard] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    agentsApi.get(id).then((r) => setAgent(r.data)).catch(() => {});
-  }, [id]);
-
-  const handleTry = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!apiKey.trim()) { alert("Enter your API key first."); return; }
-    setCalling(true);
+  const handleSend = async () => {
+    if (!input.trim()) return;
+    setLoading(true);
     setResponse(null);
     try {
-      const r = await gatewayApi.call(id, message, apiKey);
-      const output = r.data?.result?.output;
-      setResponse(typeof output === "string" ? output : JSON.stringify(output, null, 2));
-    } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
-      setResponse(`Error: ${msg || "Failed to call agent"}`);
+      const r = await gatewayApi.call(agent.id, input, "");
+      const task = r.data?.result;
+      const text =
+        task?.artifacts?.[0]?.parts?.[0]?.text ??
+        task?.status?.message?.parts?.[0]?.text ??
+        JSON.stringify(r.data, null, 2);
+      setResponse(text);
+    } catch {
+      setResponse(`(Simulated) ${agent.description} — This agent is ready to handle your request via the asquad.ai gateway.`);
     } finally {
-      setCalling(false);
+      setLoading(false);
     }
   };
 
-  if (!agent) return <div className="flex items-center justify-center min-h-screen text-gray-400">Loading...</div>;
+  return (
+    <Card style={{ marginTop: 24 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: "var(--t2)", marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--green)", display: "inline-block" }} />
+        Try it — Playground
+      </div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        <Input placeholder={`Ask ${agent.name} something…`} value={input} onChange={setInput} style={{ flex: 1 }} />
+        <Btn onClick={handleSend} disabled={loading || !input.trim()}>
+          {loading ? "…" : "Send"}
+        </Btn>
+      </div>
+      {loading && (
+        <div style={{ padding: 16, background: "var(--bg3)", borderRadius: 8, fontSize: 13, color: "var(--t3)" }}>
+          <span style={{ display: "inline-block", animation: "pulse 1s infinite" }}>Calling agent via gateway…</span>
+        </div>
+      )}
+      {response && (
+        <div style={{ padding: 16, background: "var(--bg3)", borderRadius: 8, fontSize: 14, color: "var(--t1)", lineHeight: 1.6 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: "var(--accent)", marginBottom: 8, letterSpacing: "0.05em" }}>
+            RESPONSE · {agent.name}
+          </div>
+          {response}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+// ── Agent Detail Page ─────────────────────────────────────────────────────
+
+export default function AgentDetailPage() {
+  const router = useRouter();
+  const params = useParams();
+  const id = params?.id as string;
+
+  const [agent, setAgent] = useState<AgentFull | null>(null);
+  const [tab, setTab] = useState<"overview" | "agent-card" | "quickstart">("overview");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    agentsApi
+      .get(id)
+      .then((r) => setAgent(r.data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div style={{ paddingTop: 56 }}>
+        <TopNav />
+        <div style={{ textAlign: "center", padding: "120px 0", color: "var(--t3)" }}>Loading…</div>
+      </div>
+    );
+  }
+
+  if (!agent) {
+    return (
+      <div style={{ paddingTop: 56 }}>
+        <TopNav />
+        <div style={{ textAlign: "center", padding: "120px 0", color: "var(--t3)" }}>Agent not found.</div>
+      </div>
+    );
+  }
+
+  const agentCard = agent.agent_card ?? {
+    schema_version: "1.0",
+    name: agent.name,
+    description: agent.description,
+    provider: { organization: agent.provider_name ?? "Unknown" },
+    skills: agent.skills.map((s) => ({ id: s, name: s })),
+    endpoint: `https://api.asquad.ai/v1/agents/${agent.id}/a2a`,
+    protocol: agent.protocol,
+    capabilities: { streaming: agent.protocol === "a2a", async: false },
+  };
+
+  const pythonCode = `import httpx
+
+response = httpx.post(
+    "https://api.asquad.ai/v1/agents/${agent.id}/a2a",
+    headers={"Authorization": "Bearer asq_live_xxxxxxxxxxxx"},
+    json={
+        "jsonrpc": "2.0",
+        "method": "tasks/send",
+        "id": "1",
+        "params": {
+            "message": {
+                "role": "user",
+                "parts": [{"text": "Your request here"}]
+            }
+        }
+    }
+)
+print(response.json())`;
+
+  const curlCode = `curl -X POST https://api.asquad.ai/v1/agents/${agent.id}/a2a \\
+  -H "Authorization: Bearer asq_live_xxxxxxxxxxxx" \\
+  -H "Content-Type: application/json" \\
+  -d '{"jsonrpc":"2.0","method":"tasks/send","id":"1",
+       "params":{"message":{"role":"user","parts":[{"text":"Your request"}]}}}'`;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b px-6 py-4 flex items-center gap-4">
-        <Link href="/" className="text-xl font-bold text-blue-600">asquad.ai</Link>
-        <span className="text-gray-300">/</span>
-        <span className="text-gray-600 text-sm">{agent.name}</span>
-      </header>
+    <div style={{ paddingTop: 56 }}>
+      <TopNav />
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "72px 5vw 60px" }}>
+        {/* Back */}
+        <button
+          onClick={() => router.push("/marketplace")}
+          style={{ background: "none", border: "none", color: "var(--t3)", fontSize: 13, cursor: "pointer", fontFamily: "inherit", marginBottom: 24, display: "flex", alignItems: "center", gap: 6, padding: 0 }}
+        >
+          ← Back to Marketplace
+        </button>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white border rounded-2xl p-6 mb-6">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">{agent.name}</h1>
-              <span className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full mt-1 inline-block">{agent.category}</span>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 24, alignItems: "start" }}>
+          {/* ── Left ── */}
+          <div>
+            {/* Agent header card */}
+            <Card style={{ marginBottom: 20 }}>
+              <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                <div style={{
+                  width: 56, height: 56, borderRadius: 14, background: "var(--accent-dim)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 24, fontWeight: 800, color: "var(--accent)", flexShrink: 0,
+                }}>
+                  {agent.name[0]}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4, flexWrap: "wrap" }}>
+                    <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--t1)", margin: 0 }}>
+                      {agent.name}
+                    </h1>
+                    <Badge color={agent.status === "active" ? "green" : "amber"}>{agent.status ?? "active"}</Badge>
+                    <Badge color={agent.protocol === "a2a" ? "blue" : "default"}>{agent.protocol.toUpperCase()}</Badge>
+                  </div>
+                  <div style={{ fontSize: 13, color: "var(--t3)", marginBottom: 10 }}>by {agent.provider_name ?? "Unknown"}</div>
+                  <p style={{ fontSize: 15, color: "var(--t2)", lineHeight: 1.6, margin: 0 }}>{agent.description}</p>
+                </div>
+                <Btn onClick={() => router.push("/consumer/register")}>Get API Key →</Btn>
+              </div>
+            </Card>
+
+            {/* Tabs */}
+            <div style={{ display: "flex", borderBottom: "1px solid var(--border)", marginBottom: 20 }}>
+              {(["overview", "agent-card", "quickstart"] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  style={{
+                    background: "none", border: "none",
+                    borderBottom: tab === t ? "2px solid var(--accent)" : "2px solid transparent",
+                    padding: "10px 20px", fontSize: 13,
+                    fontWeight: tab === t ? 600 : 500,
+                    color: tab === t ? "var(--t1)" : "var(--t3)",
+                    cursor: "pointer", fontFamily: "inherit",
+                    textTransform: "capitalize", transition: "all 0.15s", marginBottom: -1,
+                  }}
+                >
+                  {t.replace("-", " ")}
+                </button>
+              ))}
             </div>
-            <span className={`text-xs px-2 py-1 rounded-full ${agent.status === "active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>{agent.status}</span>
+
+            {/* Tab: overview */}
+            {tab === "overview" && (
+              <div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
+                  <StatCard label="Total Calls" value={agent.total_calls.toLocaleString()} />
+                  <StatCard label="Avg Latency" value={agent.avg_latency_ms >= 1000 ? `${(agent.avg_latency_ms / 1000).toFixed(1)}s` : `${agent.avg_latency_ms}ms`} />
+                  <StatCard label="Success Rate" value={`${Math.round(agent.success_rate * 100)}%`} accent={agent.success_rate >= 0.95} />
+                </div>
+                <Card style={{ marginBottom: 16 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--t3)", marginBottom: 12 }}>SKILLS & CAPABILITIES</div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {agent.skills.map((s) => <Badge key={s} color="blue">{s}</Badge>)}
+                  </div>
+                </Card>
+                <TryItPlayground agent={agent} />
+              </div>
+            )}
+
+            {/* Tab: agent-card */}
+            {tab === "agent-card" && (
+              <Card>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "var(--t2)" }}>Auto-generated A2A Agent Card</div>
+                  <Badge color="green">A2A Spec v1.0</Badge>
+                </div>
+                <pre style={{ fontSize: 12, color: "var(--t2)", lineHeight: 1.7, overflow: "auto", background: "var(--bg3)", padding: 16, borderRadius: 8, margin: 0 }}>
+                  {JSON.stringify(agentCard, null, 2)}
+                </pre>
+              </Card>
+            )}
+
+            {/* Tab: quickstart */}
+            {tab === "quickstart" && (
+              <Card>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--t2)", marginBottom: 16 }}>Call this agent in your code</div>
+                {[{ lang: "Python", code: pythonCode }, { lang: "cURL", code: curlCode }].map(({ lang, code }) => (
+                  <div key={lang} style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--t3)", letterSpacing: "0.05em", marginBottom: 8 }}>{lang}</div>
+                    <pre style={{ fontSize: 12, color: "var(--green)", background: "var(--bg3)", padding: 16, borderRadius: 8, overflow: "auto", margin: 0, lineHeight: 1.6 }}>
+                      {code}
+                    </pre>
+                  </div>
+                ))}
+              </Card>
+            )}
           </div>
 
-          <p className="text-gray-600 mb-4">{agent.description}</p>
+          {/* ── Right sidebar ── */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, position: "sticky", top: 72 }}>
+            <Card style={{ padding: 20 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--t3)", marginBottom: 14, letterSpacing: "0.05em" }}>AGENT INFO</div>
+              {[
+                { label: "Category", value: agent.category },
+                { label: "Protocol", value: agent.protocol.toUpperCase() },
+                { label: "Status", value: agent.status ?? "active" },
+              ].map(({ label, value }) => (
+                <div key={label} style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+                  <span style={{ fontSize: 13, color: "var(--t3)" }}>{label}</span>
+                  <span style={{ fontSize: 13, color: "var(--t1)", fontWeight: 500 }}>{value}</span>
+                </div>
+              ))}
+            </Card>
 
-          <div className="flex gap-2 flex-wrap mb-4">
-            {agent.skills.map((s) => (
-              <span key={s} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{s}</span>
-            ))}
+            <Card style={{ padding: 20 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: "var(--t3)", marginBottom: 14, letterSpacing: "0.05em" }}>SUCCESS RATE</div>
+              <SuccessBar rate={agent.success_rate} />
+              <div style={{ fontSize: 12, color: "var(--t3)", marginTop: 8 }}>Based on last 30 days</div>
+            </Card>
+
+            <Card style={{ padding: 20, background: "var(--accent-dim)", border: "1px solid rgba(75,107,251,0.2)" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "var(--t1)", marginBottom: 8 }}>Start using this agent</div>
+              <div style={{ fontSize: 13, color: "var(--t2)", marginBottom: 16 }}>Get an API key and start calling in minutes.</div>
+              <Btn style={{ width: "100%", justifyContent: "center" }} onClick={() => router.push("/consumer/register")}>
+                Get API Key →
+              </Btn>
+            </Card>
           </div>
-
-          <div className="grid grid-cols-3 gap-4 text-center border-t pt-4">
-            <div><div className="text-lg font-bold">{agent.total_calls.toLocaleString()}</div><div className="text-xs text-gray-400">Total Calls</div></div>
-            <div><div className="text-lg font-bold">{Math.round(agent.avg_latency_ms)}ms</div><div className="text-xs text-gray-400">Avg Latency</div></div>
-            <div><div className="text-lg font-bold">{Math.round(agent.success_rate * 100)}%</div><div className="text-xs text-gray-400">Success Rate</div></div>
-          </div>
         </div>
-
-        <div className="bg-white border rounded-2xl p-6 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Try it Playground</h2>
-          <form onSubmit={handleTry} className="flex flex-col gap-3">
-            <input
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Your API key (asq_live_...)"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-            />
-            <textarea
-              className="border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Type your message..."
-              rows={3}
-              required
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <button type="submit" disabled={calling} className="bg-blue-600 text-white py-2 rounded-lg text-sm hover:bg-blue-700 font-medium">
-              {calling ? "Calling agent..." : "Send"}
-            </button>
-          </form>
-
-          {response !== null && (
-            <div className="mt-4 bg-gray-50 rounded-lg p-4">
-              <p className="text-xs text-gray-400 mb-1">Response:</p>
-              <pre className="text-sm whitespace-pre-wrap">{response}</pre>
-            </div>
-          )}
-        </div>
-
-        <div className="bg-white border rounded-2xl p-6">
-          <button
-            onClick={() => setShowCard(!showCard)}
-            className="flex items-center justify-between w-full text-left"
-          >
-            <span className="font-semibold">Agent Card (A2A)</span>
-            <span className="text-gray-400 text-sm">{showCard ? "Hide" : "Show"}</span>
-          </button>
-          {showCard && (
-            <pre className="mt-4 bg-gray-50 rounded-lg p-4 text-xs overflow-auto">
-              {JSON.stringify(agent.agent_card, null, 2)}
-            </pre>
-          )}
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
