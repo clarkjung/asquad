@@ -126,6 +126,18 @@ export default function LandingPage() {
     <div style={{ paddingTop: 56 }}>
       <TopNav />
 
+      <style>{`
+        @media (max-width: 768px) {
+          .hero-inner { flex-direction: column !important; gap: 32px !important; padding: 40px 0 !important; }
+          .hero-right { display: none !important; }
+          .hero-h1 { font-size: 42px !important; }
+          .hero-p { font-size: 16px !important; max-width: 100% !important; }
+          .dual-cta { grid-template-columns: 1fr !important; }
+          .how-steps { flex-direction: column !important; }
+          .how-divider { display: none !important; }
+        }
+      `}</style>
+
       {/* ── Hero ── */}
       <section style={{
         minHeight: "88vh", display: "flex", alignItems: "center",
@@ -144,7 +156,7 @@ export default function LandingPage() {
           pointerEvents: "none",
         }} />
 
-        <div style={{
+        <div className="hero-inner" style={{
           display: "flex", alignItems: "center", gap: "6vw",
           width: "100%", maxWidth: 1200, margin: "0 auto", position: "relative",
         }}>
@@ -160,7 +172,7 @@ export default function LandingPage() {
               <span style={{ fontSize: 12, fontWeight: 600, color: "var(--accent)", letterSpacing: "0.05em" }}>BUILT ON A2A PROTOCOL</span>
             </div>
 
-            <h1 style={{
+            <h1 className="hero-h1" style={{
               fontSize: "clamp(40px, 5vw, 68px)", fontWeight: 800,
               letterSpacing: "-0.04em", lineHeight: 1.08, color: "var(--t1)", marginBottom: 24,
             }}>
@@ -168,7 +180,7 @@ export default function LandingPage() {
               for <span style={{ color: "var(--accent)" }}>AI Agents</span>
             </h1>
 
-            <p style={{ fontSize: 18, color: "var(--t2)", lineHeight: 1.65, marginBottom: 36, maxWidth: 480 }}>
+            <p className="hero-p" style={{ fontSize: 18, color: "var(--t2)", lineHeight: 1.65, marginBottom: 36, maxWidth: 480 }}>
               Register your AI agent. Discover specialized agents. Connect them all through a single, standardized gateway — no integration work required.
             </p>
 
@@ -201,7 +213,7 @@ export default function LandingPage() {
           </div>
 
           {/* Right — Agent Network */}
-          <div style={{ flex: "0 0 420px", display: "flex", justifyContent: "center" }}>
+          <div className="hero-right" style={{ flex: "0 0 420px", display: "flex", justifyContent: "center" }}>
             <AgentNetworkSVG />
           </div>
         </div>
@@ -218,13 +230,13 @@ export default function LandingPage() {
               From zero to agent-to-agent in minutes
             </h2>
           </div>
-          <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
+          <div className="how-steps" style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
             <HowItWorksStep num="01" title="Register Your Agent"
               desc="Paste your HTTP endpoint URL, add a description and skills. We auto-generate an A2A-compatible Agent Card and validate your endpoint is live." />
-            <div style={{ width: 1, background: "var(--border)", alignSelf: "stretch" }} />
+            <div className="how-divider" style={{ width: 1, background: "var(--border)", alignSelf: "stretch" }} />
             <HowItWorksStep num="02" title="Get Discovered"
               desc="Consumers search in plain English. Our semantic search engine matches their query to your agent's capabilities and surfaces you to the right buyers." />
-            <div style={{ width: 1, background: "var(--border)", alignSelf: "stretch" }} />
+            <div className="how-divider" style={{ width: 1, background: "var(--border)", alignSelf: "stretch" }} />
             <HowItWorksStep num="03" title="Connect & Scale"
               desc="Every call routes through our gateway — we handle authentication, rate limiting, protocol translation, and metering. You focus on your agent." />
           </div>
@@ -259,7 +271,7 @@ export default function LandingPage() {
 
       {/* ── Dual CTA ── */}
       <section style={{ padding: "80px 5vw", borderTop: "1px solid var(--border)" }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+        <div className="dual-cta" style={{ maxWidth: 1100, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
           {/* Provider */}
           <Card style={{ padding: 40, background: "var(--accent-dim)", border: "1px solid rgba(75,107,251,0.2)" }}>
             <Badge color="blue">For Providers</Badge>
