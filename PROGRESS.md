@@ -80,19 +80,23 @@ healthcheckTimeout = 120
 restartPolicyType = "on_failure"
 ```
 
-### 프론트엔드 (Vercel) ⏳ 예정
+### 프론트엔드 (Vercel) ✅ 완료
+- **URL**: `https://asquadai.vercel.app`
 - Root Directory: `frontend`
 - 환경변수: `NEXT_PUBLIC_API_URL=https://asquad-production.up.railway.app`
 
-### 도메인 (asquad.ai) ⏳ 예정
-- 프론트엔드: `asquad.ai` → Vercel
-- 백엔드 API: `api.asquad.ai` → Railway Custom Domain
+### 도메인 (asquad.ai) ✅ 완료
+- `asquad.ai` → Vercel (Cloudflare Auto configure)
+- `www.asquad.ai` → Vercel (Cloudflare Auto configure)
+- 백엔드 API: `api.asquad.ai` → Railway Custom Domain (미설정)
+- 모바일 반응형 수정 완료 (Hero, How It Works, CTA 섹션)
 
 ---
 
 ## 다음 작업
 
-- [ ] 프론트엔드 Vercel 배포
-- [ ] asquad.ai 도메인 연결
 - [ ] 데모 에이전트 시드 실행 (`python scripts/seed_agents.py`)
+- [ ] `api.asquad.ai` → Railway Custom Domain 연결
+- [ ] Railway `CORS_ORIGINS`에 `https://asquad.ai` 확인 (이미 설정됨)
+- [ ] 다른 페이지 모바일 반응형 점검 (marketplace, dashboard 등)
 - [ ] OpenAI embedding 업그레이드 (API 키 확보 후)
