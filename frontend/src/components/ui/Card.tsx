@@ -7,13 +7,15 @@ interface CardProps {
   style?: React.CSSProperties;
   onClick?: () => void;
   hover?: boolean;
+  id?: string;
 }
 
-export default function Card({ children, style = {}, onClick, hover = false }: CardProps) {
+export default function Card({ children, style = {}, onClick, hover = false, id }: CardProps) {
   const [hovered, setHovered] = useState(false);
 
   return (
     <div
+      id={id}
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

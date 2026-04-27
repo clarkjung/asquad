@@ -6,7 +6,7 @@ import TopNav from "@/components/TopNav";
 import { AgentCard, Agent, Input } from "@/components/ui";
 import { agentsApi } from "@/lib/api";
 
-const CATEGORIES = ["All", "Customer Support", "Developer Tools", "Sales & Marketing", "Legal", "General"];
+const CATEGORIES = ["All", "Legal", "Engineering", "Analytics", "Customer Success", "Marketing", "Finance", "Productivity", "HR", "Language"];
 
 export default function MarketplacePage() {
   const router = useRouter();

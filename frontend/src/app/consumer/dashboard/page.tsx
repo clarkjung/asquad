@@ -36,21 +36,22 @@ interface Usage {
 
 // ── Sidebar Link ──────────────────────────────────────────────────────────
 
-function SidebarLink({ label, icon, badge, active }: { label: string; icon: string; badge?: string; active?: boolean }) {
+function SidebarLink({ label, icon, badge, active, onClick }: { label: string; icon: string; badge?: string; active?: boolean; onClick?: () => void }) {
   return (
-    <div style={{
+    <button onClick={onClick} style={{
       display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "8px 20px", cursor: "pointer",
+      padding: "8px 20px", cursor: "pointer", width: "100%", textAlign: "left",
       background: active ? "var(--accent-dim)" : "transparent",
       borderLeft: active ? "2px solid var(--accent)" : "2px solid transparent",
-      transition: "all 0.15s",
+      borderTop: "none", borderRight: "none", borderBottom: "none",
+      transition: "all 0.15s", fontFamily: "inherit",
     }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <span style={{ fontSize: 14, opacity: 0.7 }}>{icon}</span>
         <span style={{ fontSize: 13, fontWeight: active ? 600 : 400, color: active ? "var(--t1)" : "var(--t2)" }}>{label}</span>
       </div>
       {badge && <span style={{ fontSize: 10, fontWeight: 700, background: "var(--accent)", color: "#fff", padding: "1px 6px", borderRadius: 8 }}>{badge}</span>}
-    </div>
+    </button>
   );
 }
 
@@ -63,6 +64,12 @@ export default function ConsumerDashboard() {
   const [showNewKey, setShowNewKey] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
   const [creating, setCreating] = useState(false);
+  const [activeSection, setActiveSection] = useState("overview");
+
+  const scrollTo = (id: string) => {
+    setActiveSection(id);
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
 
   useEffect(() => {
@@ -135,12 +142,20 @@ export default function ConsumerDashboard() {
             <div style={{ fontSize: 11, color: "var(--t3)", marginTop: 2 }}>My Account</div>
           </div>
           {[
-            { label: "Overview", icon: "◈", active: true },
-            { label: "API Keys", icon: "⚿", badge: apiKeys.filter((k) => k.is_active).length.toString() },
-            { label: "Usage", icon: "▲" },
-            { label: "Documentation", icon: "≡" },
-            { label: "Settings", icon: "⚙" },
-          ].map((item) => <SidebarLink key={item.label} {...item} />)}
+            { label: "Overview", icon: "◈", id: "overview" },
+            { label: "API Keys", icon: "⚿", id: "api-keys", badge: apiKeys.filter((k) => k.is_active).length.toString() },
+            { label: "Usage", icon: "▲", id: "usage" },
+            { label: "Documentation", icon: "≡", id: "quickstart" },
+          ].map((item) => (
+            <SidebarLink
+              key={item.label}
+              label={item.label}
+              icon={item.icon}
+              badge={item.badge}
+              active={activeSection === item.id}
+              onClick={() => scrollTo(item.id)}
+            />
+          ))}
           <div style={{ margin: "16px 12px 0", borderTop: "1px solid var(--border)", paddingTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
             <Btn size="sm" style={{ width: "100%", justifyContent: "center" }} onClick={() => router.push("/marketplace")}>Browse Agents</Btn>
             <button onClick={handleLogout} style={{ width: "100%", padding: "8px", fontSize: 12, color: "var(--t3)", background: "none", border: "1px solid var(--border)", borderRadius: 6, cursor: "pointer", fontFamily: "inherit" }}>
@@ -151,7 +166,7 @@ export default function ConsumerDashboard() {
 
         {/* ── Main ── */}
         <div style={{ flex: 1, minWidth: 0, padding: "32px 40px", overflowY: "auto" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
+          <div id="overview" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
             <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--t1)", margin: 0 }}>Overview</h1>
             <Btn size="sm" onClick={() => setShowNewKey(true)}>+ New API Key</Btn>
           </div>
@@ -187,7 +202,7 @@ export default function ConsumerDashboard() {
           )}
 
           {/* Chart + Agent breakdown */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+          <div id="usage" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
             <Card>
               <div style={{ fontSize: 14, fontWeight: 600, color: "var(--t1)", marginBottom: 20 }}>Calls This Week</div>
               <MiniChart data={usage?.chart_data ?? [0,0,0,0,0,0,0]} labels={usage?.chart_labels ?? ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]} color="var(--green)" />
@@ -230,7 +245,7 @@ export default function ConsumerDashboard() {
           )}
 
           {/* API Keys table */}
-          <Card style={{ padding: 0, overflow: "hidden", marginBottom: 16 }}>
+          <Card id="api-keys" style={{ padding: 0, overflow: "hidden", marginBottom: 16 }}>
             <div style={{ padding: "18px 24px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: "var(--t1)" }}>API Keys</div>
               <div style={{ fontSize: 12, color: "var(--t3)" }}>Keys are shown once on creation</div>
@@ -276,7 +291,7 @@ export default function ConsumerDashboard() {
           </Card>
 
           {/* Quickstart */}
-          <Card>
+          <Card id="quickstart">
             <div style={{ fontSize: 14, fontWeight: 600, color: "var(--t1)", marginBottom: 14 }}>Quickstart</div>
             <pre style={{ fontSize: 12, color: "var(--green)", background: "var(--bg3)", padding: 16, borderRadius: 8, overflow: "auto", margin: 0, lineHeight: 1.7 }}>
 {`import httpx

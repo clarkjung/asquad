@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Btn from "./ui/Btn";
 
 const NAV_ITEMS = [
@@ -14,7 +14,22 @@ const NAV_ITEMS = [
 
 export default function TopNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    setRole(localStorage.getItem("role"));
+  }, [pathname]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    setRole(null);
+    router.push("/");
+  };
+
+  const dashboardHref = role === "provider" ? "/provider/dashboard" : "/consumer/dashboard";
 
   return (
     <>
@@ -103,8 +118,17 @@ export default function TopNav() {
 
         {/* Desktop auth buttons */}
         <div className="topnav-auth" style={{ gap: 8, flexShrink: 0 }}>
-          <Btn variant="ghost" size="sm" onClick={() => (window.location.href = "/register?mode=signin")}>Sign In</Btn>
-          <Btn size="sm" onClick={() => (window.location.href = "/register")}>Get Started</Btn>
+          {role ? (
+            <>
+              <Btn variant="ghost" size="sm" onClick={() => router.push(dashboardHref)}>Dashboard</Btn>
+              <Btn variant="ghost" size="sm" onClick={handleLogout}>Sign Out</Btn>
+            </>
+          ) : (
+            <>
+              <Btn variant="ghost" size="sm" onClick={() => (window.location.href = "/register?mode=signin")}>Sign In</Btn>
+              <Btn size="sm" onClick={() => (window.location.href = "/register")}>Get Started</Btn>
+            </>
+          )}
         </div>
 
         {/* Mobile hamburger */}
@@ -169,8 +193,17 @@ export default function TopNav() {
             );
           })}
           <div style={{ height: 1, background: "var(--border)", margin: "8px 0" }} />
-          <button onClick={() => { setMenuOpen(false); window.location.href = "/register?mode=signin"; }} style={{ background: "none", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px", fontSize: 15, color: "var(--t1)", cursor: "pointer", textAlign: "left", fontWeight: 500 }}>Sign In</button>
-          <button onClick={() => { setMenuOpen(false); window.location.href = "/register"; }} style={{ background: "var(--accent)", border: "none", borderRadius: 8, padding: "10px 14px", fontSize: 15, color: "white", cursor: "pointer", textAlign: "left", fontWeight: 600, marginTop: 4 }}>Get Started</button>
+          {role ? (
+            <>
+              <button onClick={() => { setMenuOpen(false); router.push(dashboardHref); }} style={{ background: "none", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px", fontSize: 15, color: "var(--t1)", cursor: "pointer", textAlign: "left", fontWeight: 500 }}>Dashboard</button>
+              <button onClick={() => { setMenuOpen(false); handleLogout(); }} style={{ background: "none", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px", fontSize: 15, color: "var(--t1)", cursor: "pointer", textAlign: "left", fontWeight: 500, marginTop: 4 }}>Sign Out</button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => { setMenuOpen(false); window.location.href = "/register?mode=signin"; }} style={{ background: "none", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px", fontSize: 15, color: "var(--t1)", cursor: "pointer", textAlign: "left", fontWeight: 500 }}>Sign In</button>
+              <button onClick={() => { setMenuOpen(false); window.location.href = "/register"; }} style={{ background: "var(--accent)", border: "none", borderRadius: 8, padding: "10px 14px", fontSize: 15, color: "white", cursor: "pointer", textAlign: "left", fontWeight: 600, marginTop: 4 }}>Get Started</button>
+            </>
+          )}
         </div>
       )}
     </>
