@@ -8,28 +8,25 @@ import Btn from "./ui/Btn";
 const NAV_ITEMS = [
   { href: "/", label: "Home" },
   { href: "/marketplace", label: "Marketplace" },
-  { href: "/provider/dashboard", label: "Provider" },
-  { href: "/consumer/dashboard", label: "Consumer" },
 ];
 
 export default function TopNav() {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [role, setRole] = useState<string | null>(null);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
-    setRole(localStorage.getItem("role"));
+    setLoggedIn(!!localStorage.getItem("logged_in"));
   }, [pathname]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
-    setRole(null);
+    localStorage.removeItem("provider_token");
+    localStorage.removeItem("consumer_token");
+    localStorage.removeItem("logged_in");
+    setLoggedIn(false);
     router.push("/");
   };
-
-  const dashboardHref = role === "provider" ? "/provider/dashboard" : "/consumer/dashboard";
 
   return (
     <>
@@ -118,9 +115,9 @@ export default function TopNav() {
 
         {/* Desktop auth buttons */}
         <div className="topnav-auth" style={{ gap: 8, flexShrink: 0 }}>
-          {role ? (
+          {loggedIn ? (
             <>
-              <Btn variant="ghost" size="sm" onClick={() => router.push(dashboardHref)}>Dashboard</Btn>
+              <Btn variant="ghost" size="sm" onClick={() => router.push("/dashboard")}>Dashboard</Btn>
               <Btn variant="ghost" size="sm" onClick={handleLogout}>Sign Out</Btn>
             </>
           ) : (
@@ -193,9 +190,9 @@ export default function TopNav() {
             );
           })}
           <div style={{ height: 1, background: "var(--border)", margin: "8px 0" }} />
-          {role ? (
+          {loggedIn ? (
             <>
-              <button onClick={() => { setMenuOpen(false); router.push(dashboardHref); }} style={{ background: "none", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px", fontSize: 15, color: "var(--t1)", cursor: "pointer", textAlign: "left", fontWeight: 500 }}>Dashboard</button>
+              <button onClick={() => { setMenuOpen(false); router.push("/dashboard"); }} style={{ background: "none", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px", fontSize: 15, color: "var(--t1)", cursor: "pointer", textAlign: "left", fontWeight: 500 }}>Dashboard</button>
               <button onClick={() => { setMenuOpen(false); handleLogout(); }} style={{ background: "none", border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px", fontSize: 15, color: "var(--t1)", cursor: "pointer", textAlign: "left", fontWeight: 500, marginTop: 4 }}>Sign Out</button>
             </>
           ) : (

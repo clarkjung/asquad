@@ -2,49 +2,54 @@ import axios from "axios";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
-export const api = axios.create({
-  baseURL: BASE_URL,
-  headers: { "Content-Type": "application/json" },
+const publicApi = axios.create({ baseURL: BASE_URL, headers: { "Content-Type": "application/json" } });
+
+const providerApi = axios.create({ baseURL: BASE_URL, headers: { "Content-Type": "application/json" } });
+providerApi.interceptors.request.use((config) => {
+  const token = typeof window !== "undefined" ? localStorage.getItem("provider_token") : null;
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
 });
 
-api.interceptors.request.use((config) => {
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+const consumerApi = axios.create({ baseURL: BASE_URL, headers: { "Content-Type": "application/json" } });
+consumerApi.interceptors.request.use((config) => {
+  const token = typeof window !== "undefined" ? localStorage.getItem("consumer_token") : null;
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
 export const agentsApi = {
-  search: (q: string, limit = 10) => api.get(`/api/v1/agents/search`, { params: { q, limit } }),
-  browse: (category?: string, limit = 20) => api.get(`/api/v1/agents/browse`, { params: { category, limit } }),
-  featured: () => api.get(`/api/v1/agents/featured`),
-  get: (id: string) => api.get(`/api/v1/agents/${id}`),
-  getCard: (id: string) => api.get(`/api/v1/agents/${id}/agent-card`),
-  create: (data: object) => api.post(`/api/v1/agents`, data),
-  update: (id: string, data: object) => api.put(`/api/v1/agents/${id}`, data),
-  delete: (id: string) => api.delete(`/api/v1/agents/${id}`),
-  stats: (id: string) => api.get(`/api/v1/agents/${id}/stats`),
-  validateEndpoint: (url: string) => api.post(`/api/v1/agents/validate-endpoint`, { url }),
+  search: (q: string, limit = 10) => publicApi.get(`/api/v1/agents/search`, { params: { q, limit } }),
+  browse: (category?: string, limit = 20) => publicApi.get(`/api/v1/agents/browse`, { params: { category, limit } }),
+  featured: () => publicApi.get(`/api/v1/agents/featured`),
+  get: (id: string) => publicApi.get(`/api/v1/agents/${id}`),
+  getCard: (id: string) => publicApi.get(`/api/v1/agents/${id}/agent-card`),
+  create: (data: object) => providerApi.post(`/api/v1/agents`, data),
+  update: (id: string, data: object) => providerApi.put(`/api/v1/agents/${id}`, data),
+  delete: (id: string) => providerApi.delete(`/api/v1/agents/${id}`),
+  stats: (id: string) => providerApi.get(`/api/v1/agents/${id}/stats`),
+  validateEndpoint: (url: string) => publicApi.post(`/api/v1/agents/validate-endpoint`, { url }),
 };
 
 export const providersApi = {
-  register: (data: object) => api.post(`/api/v1/providers/register`, data),
-  login: (data: object) => api.post(`/api/v1/providers/login`, data),
-  me: () => api.get(`/api/v1/providers/me`),
-  myAgents: () => api.get(`/api/v1/providers/my-agents`),
+  register: (data: object) => publicApi.post(`/api/v1/providers/register`, data),
+  login: (data: object) => publicApi.post(`/api/v1/providers/login`, data),
+  me: () => providerApi.get(`/api/v1/providers/me`),
+  myAgents: () => providerApi.get(`/api/v1/providers/my-agents`),
 };
 
 export const consumersApi = {
-  register: (data: object) => api.post(`/api/v1/consumers/register`, data),
-  login: (data: object) => api.post(`/api/v1/consumers/login`, data),
-  createApiKey: (data: object) => api.post(`/api/v1/consumers/api-keys`, data),
-  listApiKeys: () => api.get(`/api/v1/consumers/api-keys`),
-  revokeApiKey: (id: string) => api.delete(`/api/v1/consumers/api-keys/${id}`),
-  usage: () => api.get(`/api/v1/consumers/usage`),
+  register: (data: object) => publicApi.post(`/api/v1/consumers/register`, data),
+  login: (data: object) => publicApi.post(`/api/v1/consumers/login`, data),
+  createApiKey: (data: object) => consumerApi.post(`/api/v1/consumers/api-keys`, data),
+  listApiKeys: () => consumerApi.get(`/api/v1/consumers/api-keys`),
+  revokeApiKey: (id: string) => consumerApi.delete(`/api/v1/consumers/api-keys/${id}`),
+  usage: () => consumerApi.get(`/api/v1/consumers/usage`),
 };
 
 export const gatewayApi = {
   call: (agentId: string, message: string, apiKey: string) =>
-    api.post(
+    publicApi.post(
       `/api/v1/agents/${agentId}/a2a`,
       {
         jsonrpc: "2.0",
