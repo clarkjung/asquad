@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import TopNav from "@/components/TopNav";
 import { Btn, Card, Input } from "@/components/ui";
@@ -18,7 +18,7 @@ function FormField({ label, placeholder, type = "text", hint, value = "", onChan
   );
 }
 
-export default function RegisterPage() {
+function RegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const defaultMode = searchParams.get("mode") === "signin" ? "signin" : "register";
@@ -121,5 +121,13 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense>
+      <RegisterContent />
+    </Suspense>
   );
 }
