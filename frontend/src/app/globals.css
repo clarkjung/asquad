@@ -14,14 +14,14 @@
    ───────────────────────────────────────────── */
 :root,
 [data-theme="light"] {
-  --bg:      #F7F8FF;
+  --bg:      #F0F2F5;
   --bg2:     #FFFFFF;
-  --bg3:     #EDEEF6;
-  --border:  rgba(0, 0, 0, 0.08);
-  --border2: rgba(0, 0, 0, 0.15);
-  --t1:      #0C0E1A;
-  --t2:      #454A6A;
-  --t3:      #8B90B0;
+  --bg3:     #E4E7ED;
+  --border:  rgba(0, 0, 0, 0.12);
+  --border2: rgba(0, 0, 0, 0.22);
+  --t1:      #111827;
+  --t2:      #374151;
+  --t3:      #6B7280;
   --green:      #059669;
   --green-dim:  rgba(5, 150, 105, 0.1);
   --amber:   #D97706;
