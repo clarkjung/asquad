@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import TopNav from "@/components/TopNav";
 import { Btn, Badge, Card, StatCard, MiniChart, SuccessBar, LatencyBar, Input } from "@/components/ui";
 import { agentsApi, providersApi, consumersApi } from "@/lib/api";
@@ -66,9 +66,10 @@ function SidebarLink({ label, icon, badge, active, onClick }: { label: string; i
   );
 }
 
-export default function Dashboard() {
+function DashboardContent() {
   const router = useRouter();
-  const [section, setSection] = useState<Section>("overview");
+  const searchParams = useSearchParams();
+  const [section, setSection] = useState<Section>((searchParams.get("section") as Section) ?? "overview");
   const [companyName, setCompanyName] = useState("");
   const [agents, setAgents] = useState<Agent[]>([]);
   const [agentStats, setAgentStats] = useState<AgentStats | null>(null);
@@ -368,5 +369,13 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <Suspense>
+      <DashboardContent />
+    </Suspense>
   );
 }

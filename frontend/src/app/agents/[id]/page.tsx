@@ -185,7 +185,7 @@ print(response.json())`;
                   <div style={{ fontSize: 13, color: "var(--t3)", marginBottom: 10 }}>by {agent.provider_name ?? "Unknown"}</div>
                   <p style={{ fontSize: 15, color: "var(--t2)", lineHeight: 1.6, margin: 0 }}>{agent.description}</p>
                 </div>
-                <Btn onClick={() => router.push("/consumer/register")}>Get API Key →</Btn>
+                <Btn onClick={() => router.push(localStorage.getItem("logged_in") ? "/dashboard?section=api-keys" : "/register")}>Get API Key →</Btn>
               </div>
             </Card>
 
@@ -282,7 +282,7 @@ print(response.json())`;
             <Card style={{ padding: 20, background: "var(--accent-dim)", border: "1px solid rgba(75,107,251,0.2)" }}>
               <div style={{ fontSize: 14, fontWeight: 700, color: "var(--t1)", marginBottom: 8 }}>Start using this agent</div>
               <div style={{ fontSize: 13, color: "var(--t2)", marginBottom: 16 }}>Get an API key and start calling in minutes.</div>
-              <Btn style={{ width: "100%", justifyContent: "center" }} onClick={() => router.push("/consumer/register")}>
+              <Btn style={{ width: "100%", justifyContent: "center" }} onClick={() => router.push(localStorage.getItem("logged_in") ? "/dashboard?section=api-keys" : "/register")}>
                 Get API Key →
               </Btn>
             </Card>
