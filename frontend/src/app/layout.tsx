@@ -19,13 +19,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="dark" className={jakarta.variable} suppressHydrationWarning>
+    <html lang="en" data-theme="light" className={jakarta.variable} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                var t = localStorage.getItem('asquad-theme') || 'dark';
+                var t = localStorage.getItem('asquad-theme') || 'light';
                 var a = localStorage.getItem('asquad-accent') || '#4B6BFB';
                 document.documentElement.setAttribute('data-theme', t);
                 document.documentElement.style.setProperty('--accent', a);
