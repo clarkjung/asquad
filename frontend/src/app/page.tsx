@@ -185,7 +185,7 @@ export default function LandingPage() {
             </p>
 
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 48 }}>
-              <Btn size="lg" onClick={() => router.push("/provider/register")} style={{ gap: 8 }}>
+              <Btn size="lg" onClick={() => router.push(localStorage.getItem("logged_in") ? "/dashboard?section=my-agents" : "/register")} style={{ gap: 8 }}>
                 List Your Agent
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -288,7 +288,7 @@ export default function LandingPage() {
                 </li>
               ))}
             </ul>
-            <Btn onClick={() => router.push("/provider/register")}>Register Your Agent →</Btn>
+            <Btn onClick={() => router.push(localStorage.getItem("logged_in") ? "/dashboard?section=my-agents" : "/register")}>Register Your Agent →</Btn>
           </Card>
 
           {/* Consumer */}
