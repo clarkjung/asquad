@@ -12,8 +12,8 @@ AI Agent Marketplace MVP. 에이전트 제공자(Provider)와 소비자(Consumer
 | 프론트엔드 | Next.js 15 (App Router), TypeScript |
 | 데이터베이스 | PostgreSQL (Supabase), pgvector |
 | 백엔드 호스팅 | Railway |
-| 프론트엔드 호스팅 | Vercel (예정) |
-| 도메인 | asquad.ai (연결 예정) |
+| 프론트엔드 호스팅 | Vercel |
+| 도메인 | asquad.ai ✅ |
 
 ---
 
@@ -93,10 +93,36 @@ restartPolicyType = "on_failure"
 
 ---
 
+### Sprint 5 — DB 마이그레이션 & UX 개선 (2026-05-25)
+
+#### DB 마이그레이션: Supabase → Railway PostgreSQL
+- Supabase 무료 티어 한도 초과(프로젝트 2개 제한)로 DB 일시정지
+- Railway PostgreSQL로 전환 (Hobby $5/월)
+- `DATABASE_URL` 형식: `postgresql+asyncpg://postgres:...@postgres.railway.internal:5432/railway`
+- 기존 Alembic 마이그레이션 자동 실행 (startCommand 그대로 유지)
+- 데모 에이전트 10개 재시드 (임시 `/admin/seed` 엔드포인트 → 완료 후 삭제)
+
+#### UX 버그 수정
+- 로그인 상태에서 "List Your Agent" 클릭 시 Provider 가입 페이지 대신 `/dashboard?section=my-agents`로 리다이렉트
+- `/provider/register`, `/provider/login` 직접 접근 시 로그인 여부에 따라 자동 리다이렉트
+
+---
+
+## 배포 현황 (최신)
+
+### 백엔드 (Railway) ✅
+- **URL**: `https://api.asquad.ai`
+- **DB**: Railway PostgreSQL (내부 네트워크 `postgres.railway.internal`)
+
+### 프론트엔드 (Vercel) ✅
+- **URL**: `https://asquad.ai`
+
+---
+
 ## 다음 작업
 
-- [ ] 데모 에이전트 시드 실행 (`python scripts/seed_agents.py`)
-- [ ] `api.asquad.ai` → Railway Custom Domain 연결
-- [ ] Railway `CORS_ORIGINS`에 `https://asquad.ai` 확인 (이미 설정됨)
-- [ ] 다른 페이지 모바일 반응형 점검 (marketplace, dashboard 등)
+- [ ] 실제 동작하는 에이전트 1개 제작 (Claude Haiku 기반, A2A 엔드포인트)
+  - `ANTHROPIC_API_KEY` Railway 환경변수 추가 필요
+  - 어떤 capability를 특화할지 결정 필요
 - [ ] OpenAI embedding 업그레이드 (API 키 확보 후)
+- [ ] 수익화 모델 구현 (API 키별 과금, asquad → 에이전트 제공자 정산)
