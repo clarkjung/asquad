@@ -50,21 +50,21 @@ async def seed_agents():
 
     async with AsyncSessionLocal() as db:
         # Create demo provider
-        provider_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, "demo@asquad.ai"))
+        provider_id = uuid.uuid5(uuid.NAMESPACE_DNS, "demo@asquad.ai")
         existing = await db.get(Provider, provider_id)
         if not existing:
             provider = Provider(
                 id=provider_id,
                 email="demo@asquad.ai",
                 company_name="asquad.ai Demo",
-                hashed_password=hashlib.sha256(b"demo").hexdigest(),
+                password_hash=hashlib.sha256(b"demo").hexdigest(),
             )
             db.add(provider)
 
         # Create agents
         created = 0
         for a in demo_agents:
-            agent_id = str(uuid.uuid5(uuid.NAMESPACE_DNS, a["name"]))
+            agent_id = uuid.uuid5(uuid.NAMESPACE_DNS, a["name"])
             existing_agent = await db.get(Agent, agent_id)
             if not existing_agent:
                 db.add(Agent(
