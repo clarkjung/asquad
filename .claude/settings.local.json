@@ -49,7 +49,9 @@
       "Bash(git commit -m 'Update PROGRESS.md: Sprint 5 recap \\(Railway DB migration, UX fixes\\) *)",
       "WebFetch(domain:cursor.com)",
       "WebFetch(domain:github.com)",
-      "Bash(git commit -m 'Add Code Reviewer skill agent powered by Claude Haiku *)"
+      "Bash(git commit -m 'Add Code Reviewer skill agent powered by Claude Haiku *)",
+      "Bash(git commit -m 'Remove temporary seed-skill-agents endpoint *)",
+      "Bash(git commit -m 'Fix playground: add no-auth demo endpoint, bypass gateway auth *)"
     ]
   }
 }

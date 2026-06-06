@@ -33,7 +33,7 @@ function TryItPlayground({ agent }: { agent: AgentFull }) {
     setLoading(true);
     setResponse(null);
     try {
-      const r = await gatewayApi.call(agent.id, input, "");
+      const r = await gatewayApi.demo(agent.id, input);
       const task = r.data?.result;
       const text =
         task?.artifacts?.[0]?.parts?.[0]?.text ??

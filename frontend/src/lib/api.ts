@@ -59,4 +59,11 @@ export const gatewayApi = {
       },
       { headers: { Authorization: `Bearer ${apiKey}` } }
     ),
+  demo: (agentId: string, message: string) =>
+    publicApi.post(`/v1/demo/agents/${agentId}`, {
+      jsonrpc: "2.0",
+      method: "tasks/send",
+      params: { message: { parts: [{ type: "text", text: message }] } },
+      id: Date.now(),
+    }),
 };
