@@ -14,13 +14,6 @@ router = APIRouter(tags=["skills"])
 SKILLS_DIR = Path(__file__).parent.parent / "skills"
 
 
-def _load_skill(skill_name: str) -> str:
-    path = SKILLS_DIR / f"{skill_name}.md"
-    if not path.exists():
-        raise HTTPException(status_code=404, detail=f"Skill '{skill_name}' not found")
-    return path.read_text()
-
-
 def _extract_message(request: A2ARequest) -> str:
     if not request.params:
         return ""
@@ -34,11 +27,8 @@ def _extract_message(request: A2ARequest) -> str:
     return ""
 
 
-@router.post("/v1/skills/{skill_name}/a2a", response_model=A2AResponse)
-async def run_skill(skill_name: str, request: A2ARequest):
-    system_prompt = _load_skill(skill_name)
+async def _run_with_prompt(system_prompt: str, request: A2ARequest) -> A2AResponse:
     user_message = _extract_message(request)
-
     if not user_message:
         raise HTTPException(status_code=400, detail="No message provided")
 
@@ -50,30 +40,43 @@ async def run_skill(skill_name: str, request: A2ARequest):
         messages=[{"role": "user", "content": user_message}],
     )
 
-    output_text = response.content[0].text
-
     return A2AResponse(
         jsonrpc="2.0",
         id=request.id,
         result=A2ATaskResult(
             id=str(uuid.uuid4()),
             status="completed",
-            output=output_text,
+            output=response.content[0].text,
         ),
     )
 
 
+@router.post("/v1/skills/{agent_id}/a2a", response_model=A2AResponse)
+async def run_skill(agent_id: uuid.UUID, request: A2ARequest, db: AsyncSession = Depends(get_db)):
+    agent = await registry.get_agent(db, agent_id)
+
+    # Use DB skill_prompt if available, else fall back to legacy .md file
+    if agent.skill_prompt:
+        system_prompt = agent.skill_prompt
+    else:
+        md_file = SKILLS_DIR / f"{agent_id}.md"
+        # Legacy fallback: try matching by name slug
+        slug = agent.name.lower().replace(" ", "_")
+        legacy_file = SKILLS_DIR / f"{slug}.md"
+        if legacy_file.exists():
+            system_prompt = legacy_file.read_text()
+        elif md_file.exists():
+            system_prompt = md_file.read_text()
+        else:
+            raise HTTPException(status_code=404, detail="Skill prompt not found for this agent")
+
+    return await _run_with_prompt(system_prompt, request)
+
+
 @router.post("/v1/demo/agents/{agent_id}", response_model=A2AResponse)
 async def demo_call(agent_id: uuid.UUID, request: A2ARequest, db: AsyncSession = Depends(get_db)):
-    """No-auth playground endpoint — looks up the agent's skill and calls it directly."""
+    """No-auth playground endpoint."""
     agent = await registry.get_agent(db, agent_id)
     if agent.status != "active":
         raise HTTPException(status_code=503, detail="Agent not active")
-
-    # Extract skill name from endpoint_url (e.g. ".../v1/skills/code_review/a2a" → "code_review")
-    url = agent.endpoint_url or ""
-    if "/v1/skills/" not in url:
-        raise HTTPException(status_code=400, detail="This agent does not support playground demo")
-
-    skill_name = url.split("/v1/skills/")[1].rstrip("/a2a").rstrip("/")
-    return await run_skill(skill_name, request)
+    return await run_skill(agent_id, request, db)

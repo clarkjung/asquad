@@ -78,6 +78,10 @@ function DashboardContent() {
   const [showNewKey, setShowNewKey] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
   const [creating, setCreating] = useState(false);
+  const [showNewAgent, setShowNewAgent] = useState(false);
+  const [newAgent, setNewAgent] = useState({ name: "", description: "", category: "Engineering", skills: "", skill_prompt: "" });
+  const [creatingAgent, setCreatingAgent] = useState(false);
+  const [agentError, setAgentError] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined" && !localStorage.getItem("logged_in")) {
@@ -139,6 +143,28 @@ function DashboardContent() {
       setNewKeyName("");
       setShowNewKey(false);
     } finally { setCreating(false); }
+  };
+
+  const handleCreateAgent = async () => {
+    if (!newAgent.name.trim() || !newAgent.skill_prompt.trim()) return;
+    setCreatingAgent(true);
+    setAgentError("");
+    try {
+      await providersApi.createSkillAgent({
+        name: newAgent.name,
+        description: newAgent.description,
+        category: newAgent.category,
+        skills: newAgent.skills.split(",").map((s) => s.trim()).filter(Boolean),
+        skill_prompt: newAgent.skill_prompt,
+      });
+      setShowNewAgent(false);
+      setNewAgent({ name: "", description: "", category: "Engineering", skills: "", skill_prompt: "" });
+      await loadAll();
+    } catch {
+      setAgentError("Failed to create agent. Please try again.");
+    } finally {
+      setCreatingAgent(false);
+    }
   };
 
   const handleLogout = () => {
@@ -220,16 +246,61 @@ function DashboardContent() {
             <>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
                 <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--t1)", margin: 0 }}>My Agents</h1>
-                <Btn size="sm" onClick={() => router.push("/agents/new")}>+ Register Agent</Btn>
+                <Btn size="sm" onClick={() => { setShowNewAgent(true); setAgentError(""); }}>+ New Agent</Btn>
               </div>
-              {agents.length === 0 ? (
+
+              {/* New Agent Form */}
+              {showNewAgent && (
+                <Card style={{ marginBottom: 20, border: "1px solid var(--accent)", background: "var(--accent-dim)" }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "var(--t1)", marginBottom: 20 }}>Create Skill Agent</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 14 }}>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: "var(--t2)", marginBottom: 6 }}>Agent Name *</div>
+                      <Input placeholder="e.g. SQL Reviewer" value={newAgent.name} onChange={(v) => setNewAgent((p) => ({ ...p, name: v }))} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: "var(--t2)", marginBottom: 6 }}>Category</div>
+                      <select value={newAgent.category} onChange={(e) => setNewAgent((p) => ({ ...p, category: e.target.value }))} style={{ width: "100%", padding: "9px 12px", fontSize: 13, borderRadius: 8, border: "1px solid var(--border2)", background: "var(--bg2)", color: "var(--t1)", fontFamily: "inherit", outline: "none" }}>
+                        {["Engineering", "Analytics", "Legal", "Marketing", "Finance", "Customer Success", "Productivity", "HR", "Language"].map((c) => <option key={c}>{c}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div style={{ marginBottom: 14 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: "var(--t2)", marginBottom: 6 }}>Description</div>
+                    <Input placeholder="What does this agent do?" value={newAgent.description} onChange={(v) => setNewAgent((p) => ({ ...p, description: v }))} />
+                  </div>
+                  <div style={{ marginBottom: 14 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: "var(--t2)", marginBottom: 6 }}>Skills / Tags <span style={{ fontWeight: 400, color: "var(--t3)" }}>(comma-separated)</span></div>
+                    <Input placeholder="e.g. sql, review, performance" value={newAgent.skills} onChange={(v) => setNewAgent((p) => ({ ...p, skills: v }))} />
+                  </div>
+                  <div style={{ marginBottom: 18 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: "var(--t2)", marginBottom: 6 }}>System Prompt (Markdown) *</div>
+                    <textarea
+                      placeholder={"You are an expert SQL reviewer...\n\nWhen reviewing SQL:\n1. Check for injection vulnerabilities\n2. ..."}
+                      value={newAgent.skill_prompt}
+                      onChange={(e) => setNewAgent((p) => ({ ...p, skill_prompt: e.target.value }))}
+                      rows={10}
+                      style={{ width: "100%", padding: "10px 12px", fontSize: 13, borderRadius: 8, border: "1px solid var(--border2)", background: "var(--bg2)", color: "var(--t1)", fontFamily: "monospace", resize: "vertical", outline: "none", lineHeight: 1.6, boxSizing: "border-box" }}
+                    />
+                  </div>
+                  {agentError && <div style={{ fontSize: 13, color: "var(--red)", marginBottom: 12 }}>{agentError}</div>}
+                  <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+                    <Btn variant="ghost" onClick={() => { setShowNewAgent(false); setAgentError(""); }}>Cancel</Btn>
+                    <Btn onClick={handleCreateAgent} disabled={!newAgent.name.trim() || !newAgent.skill_prompt.trim() || creatingAgent}>
+                      {creatingAgent ? "Creating…" : "Create Agent →"}
+                    </Btn>
+                  </div>
+                </Card>
+              )}
+
+              {agents.length === 0 && !showNewAgent ? (
                 <Card style={{ textAlign: "center", padding: 60 }}>
                   <div style={{ fontSize: 36, marginBottom: 12 }}>◎</div>
                   <div style={{ fontSize: 16, fontWeight: 600, color: "var(--t2)", marginBottom: 8 }}>No agents yet</div>
-                  <div style={{ fontSize: 13, color: "var(--t3)", marginBottom: 24 }}>Register your AI agent to reach consumers on the marketplace.</div>
-                  <Btn onClick={() => router.push("/agents/new")}>Register Your Agent →</Btn>
+                  <div style={{ fontSize: 13, color: "var(--t3)", marginBottom: 24 }}>Upload a skill prompt and launch your agent on the marketplace.</div>
+                  <Btn onClick={() => setShowNewAgent(true)}>Create Your First Agent →</Btn>
                 </Card>
-              ) : (
+              ) : agents.length > 0 && (
                 <>
                   {agents.map((a) => (
                     <Card key={a.id} style={{ marginBottom: 12, padding: "20px 24px" }}>

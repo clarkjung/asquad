@@ -1,7 +1,10 @@
+import uuid
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from pydantic import BaseModel
 
+from app.config import settings
 from app.database import get_db
 from app.dependencies import get_current_provider
 from app.models.provider import Provider
@@ -58,3 +61,38 @@ async def my_agents(
         .order_by(Agent.created_at.desc())
     )
     return list(result.scalars().all())
+
+
+class SkillAgentCreate(BaseModel):
+    name: str
+    description: str
+    category: str = "General"
+    skills: list[str] = []
+    skill_prompt: str
+
+
+@router.post("/skill-agents", response_model=AgentResponse, status_code=201)
+async def create_skill_agent(
+    data: SkillAgentCreate,
+    provider: Provider = Depends(get_current_provider),
+    db: AsyncSession = Depends(get_db),
+):
+    agent_id = uuid.uuid4()
+    endpoint_url = f"{settings.api_public_url}/v1/skills/{agent_id}/a2a"
+
+    agent = Agent(
+        id=agent_id,
+        provider_id=provider.id,
+        name=data.name,
+        description=data.description,
+        skills=data.skills,
+        category=data.category,
+        protocol_type="a2a",
+        endpoint_url=endpoint_url,
+        skill_prompt=data.skill_prompt,
+        status="active",
+    )
+    db.add(agent)
+    await db.commit()
+    await db.refresh(agent)
+    return agent

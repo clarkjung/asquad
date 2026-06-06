@@ -21,6 +21,7 @@ class Agent(Base):
     auth_credentials: Mapped[str | None] = mapped_column(Text, nullable=True)
     agent_card: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
     embedding: Mapped[list | None] = mapped_column(Vector(1536), nullable=True)
+    skill_prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="active")
     total_calls: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     avg_latency_ms: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)

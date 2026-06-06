@@ -51,7 +51,8 @@
       "WebFetch(domain:github.com)",
       "Bash(git commit -m 'Add Code Reviewer skill agent powered by Claude Haiku *)",
       "Bash(git commit -m 'Remove temporary seed-skill-agents endpoint *)",
-      "Bash(git commit -m 'Fix playground: add no-auth demo endpoint, bypass gateway auth *)"
+      "Bash(git commit -m 'Fix playground: add no-auth demo endpoint, bypass gateway auth *)",
+      "Bash(git commit -m 'Add skill agent upload: DB-based prompt storage + dashboard form *)"
     ]
   }
 }

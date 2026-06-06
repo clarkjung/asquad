@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     anthropic_api_key: str = ""
     gateway_base_url: str = "http://localhost:8000"
+    api_public_url: str = "https://api.asquad.ai"
 
     model_config = {"env_file": ".env"}
 
