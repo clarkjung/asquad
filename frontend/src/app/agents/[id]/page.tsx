@@ -38,6 +38,7 @@ function TryItPlayground({ agent }: { agent: AgentFull }) {
       const text =
         task?.artifacts?.[0]?.parts?.[0]?.text ??
         task?.status?.message?.parts?.[0]?.text ??
+        (typeof task?.output === "string" ? task.output : null) ??
         JSON.stringify(r.data, null, 2);
       setResponse(text);
     } catch {

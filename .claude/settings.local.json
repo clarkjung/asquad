@@ -45,7 +45,11 @@
       "Bash(curl -s https://api.asquad.ai/health)",
       "Bash(git commit -m 'Add temporary seed endpoint for demo agents *)",
       "Bash(git commit -m 'Fix seed endpoint: correct field names and UUID types *)",
-      "Bash(git commit -m 'Remove temporary seed endpoint *)"
+      "Bash(git commit -m 'Remove temporary seed endpoint *)",
+      "Bash(git commit -m 'Update PROGRESS.md: Sprint 5 recap \\(Railway DB migration, UX fixes\\) *)",
+      "WebFetch(domain:cursor.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(git commit -m 'Add Code Reviewer skill agent powered by Claude Haiku *)"
     ]
   }
 }
