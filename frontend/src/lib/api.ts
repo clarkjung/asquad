@@ -37,6 +37,9 @@ export const providersApi = {
   me: () => providerApi.get(`/api/v1/providers/me`),
   myAgents: () => providerApi.get(`/api/v1/providers/my-agents`),
   createSkillAgent: (data: object) => providerApi.post(`/api/v1/providers/skill-agents`, data),
+  updateProfile: (data: object) => providerApi.put(`/api/v1/providers/me/profile`, data),
+  getPublicProfile: (id: string) => publicApi.get(`/api/v1/providers/${id}/profile`),
+  getProviderAgents: (id: string) => publicApi.get(`/api/v1/providers/${id}/agents`),
 };
 
 export const consumersApi = {

@@ -6,6 +6,86 @@ import TopNav from "@/components/TopNav";
 import { Btn, Badge, Card, StatCard, MiniChart, SuccessBar, LatencyBar, Input } from "@/components/ui";
 import { agentsApi, providersApi, consumersApi } from "@/lib/api";
 
+function ProfileSection({ providersApi }: { providersApi: typeof import("@/lib/api").providersApi }) {
+  const [form, setForm] = useState({ title: "", bio: "", years_experience: "", linkedin_url: "", specialty: "" });
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    providersApi.me().then((r) => {
+      const d = r.data;
+      setForm({
+        title: d.title ?? "",
+        bio: d.bio ?? "",
+        years_experience: d.years_experience ? String(d.years_experience) : "",
+        linkedin_url: d.linkedin_url ?? "",
+        specialty: d.specialty ?? "",
+      });
+    }).catch(() => {});
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await providersApi.updateProfile({
+        title: form.title || null,
+        bio: form.bio || null,
+        years_experience: form.years_experience ? parseInt(form.years_experience) : null,
+        linkedin_url: form.linkedin_url || null,
+        specialty: form.specialty || null,
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } finally { setSaving(false); }
+  };
+
+  const field = (label: string, key: keyof typeof form, placeholder: string, hint?: string) => (
+    <div style={{ marginBottom: 18 }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: "var(--t2)", marginBottom: 6 }}>{label}</div>
+      {key === "bio" ? (
+        <textarea
+          value={form[key]}
+          onChange={(e) => setForm((p) => ({ ...p, [key]: e.target.value }))}
+          placeholder={placeholder}
+          rows={4}
+          style={{ width: "100%", padding: "10px 12px", fontSize: 13, borderRadius: 8, border: "1px solid var(--border2)", background: "var(--bg2)", color: "var(--t1)", fontFamily: "inherit", resize: "vertical", outline: "none", lineHeight: 1.6, boxSizing: "border-box" }}
+        />
+      ) : (
+        <input
+          type="text"
+          value={form[key]}
+          onChange={(e) => setForm((p) => ({ ...p, [key]: e.target.value }))}
+          placeholder={placeholder}
+          style={{ width: "100%", padding: "10px 12px", fontSize: 13, borderRadius: 8, border: "1px solid var(--border2)", background: "var(--bg2)", color: "var(--t1)", fontFamily: "inherit", outline: "none", boxSizing: "border-box" }}
+        />
+      )}
+      {hint && <div style={{ fontSize: 11, color: "var(--t3)", marginTop: 4 }}>{hint}</div>}
+    </div>
+  );
+
+  return (
+    <>
+      <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--t1)", marginBottom: 24 }}>My Profile</h1>
+      <Card style={{ marginBottom: 16, background: "rgba(75,107,251,0.04)", border: "1px solid rgba(75,107,251,0.2)" }}>
+        <div style={{ fontSize: 13, color: "var(--t2)" }}>
+          Your profile is shown publicly on your Provider page and on all skill listings. A complete profile with credentials builds consumer trust and increases conversions.
+        </div>
+      </Card>
+      <Card>
+        {field("Professional Title", "title", "e.g. Contract Attorney, Senior Data Scientist", "Shown under your name on skill listings")}
+        {field("Specialty / Expertise", "specialty", "e.g. M&A, IP Law, Financial Modeling, NLP")}
+        {field("Years of Experience", "years_experience", "e.g. 12")}
+        {field("Bio", "bio", "2-3 sentences about your background and what makes your skills unique...", "Shown on your public provider profile page")}
+        {field("LinkedIn URL", "linkedin_url", "https://linkedin.com/in/yourname", "Adds a verified LinkedIn badge to your profile")}
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <Btn onClick={handleSave} disabled={saving}>{saving ? "Saving…" : "Save Profile"}</Btn>
+          {saved && <span style={{ fontSize: 13, color: "var(--green)", fontWeight: 600 }}>✓ Saved</span>}
+        </div>
+      </Card>
+    </>
+  );
+}
+
 interface Agent {
   id: string;
   name: string;
@@ -45,7 +125,7 @@ interface AgentStats {
   recent_calls: { id: string; time: string; consumer: string; status: "success" | "error"; latency: number }[];
 }
 
-type Section = "overview" | "my-agents" | "api-keys" | "usage";
+type Section = "overview" | "my-agents" | "api-keys" | "usage" | "profile";
 
 function SidebarLink({ label, icon, badge, active, onClick }: { label: string; icon: string; badge?: string; active?: boolean; onClick?: () => void }) {
   return (
@@ -179,6 +259,7 @@ function DashboardContent() {
     { id: "my-agents" as Section, label: "My Agents", icon: "◎", badge: agents.length > 0 ? String(agents.length) : undefined },
     { id: "api-keys" as Section, label: "API Keys", icon: "⚿", badge: apiKeys.filter((k) => k.is_active).length > 0 ? String(apiKeys.filter((k) => k.is_active).length) : undefined },
     { id: "usage" as Section, label: "Usage", icon: "▲" },
+    { id: "profile" as Section, label: "My Profile", icon: "👤" },
   ];
 
   return (
@@ -436,6 +517,11 @@ function DashboardContent() {
                 <MiniChart data={usage?.chart_data ?? [0,0,0,0,0,0,0]} labels={usage?.chart_labels ?? ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]} color="var(--accent)" />
               </Card>
             </>
+          )}
+
+          {/* ── Profile ── */}
+          {section === "profile" && (
+            <ProfileSection providersApi={providersApi} />
           )}
         </div>
       </div>

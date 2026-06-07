@@ -41,7 +41,8 @@ async def create_agent(
 
 @router.get("/{agent_id}", response_model=AgentResponse)
 async def get_agent(agent_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
-    return await registry.get_agent(db, agent_id)
+    agent = await registry.get_agent(db, agent_id)
+    return AgentResponse.from_agent(agent)
 
 
 @router.put("/{agent_id}", response_model=AgentResponse)

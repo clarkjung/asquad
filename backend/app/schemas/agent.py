@@ -38,8 +38,16 @@ class AgentResponse(BaseModel):
     avg_latency_ms: float
     success_rate: float
     created_at: datetime
+    provider_name: str | None = None
 
     model_config = {"from_attributes": True}
+
+    @classmethod
+    def from_agent(cls, agent: object) -> "AgentResponse":
+        data = cls.model_validate(agent)
+        if hasattr(agent, "provider") and agent.provider:
+            data.provider_name = agent.provider.company_name
+        return data
 
 
 class AgentSearchResult(BaseModel):

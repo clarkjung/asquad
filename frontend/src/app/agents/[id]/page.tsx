@@ -16,6 +16,7 @@ interface AgentFull {
   total_calls: number;
   avg_latency_ms: number;
   success_rate: number;
+  provider_id?: string;
   provider_name?: string;
   agent_card?: Record<string, unknown>;
   status?: string;
@@ -183,7 +184,17 @@ print(response.json())`;
                     <Badge color={agent.status === "active" ? "green" : "amber"}>{agent.status ?? "active"}</Badge>
                     <Badge color={agent.protocol_type === "a2a" ? "blue" : "default"}>{(agent.protocol_type ?? "rest").toUpperCase()}</Badge>
                   </div>
-                  <div style={{ fontSize: 13, color: "var(--t3)", marginBottom: 10 }}>by {agent.provider_name ?? "Unknown"}</div>
+                  <div style={{ fontSize: 13, color: "var(--t3)", marginBottom: 10 }}>
+                    by{" "}
+                    {agent.provider_id ? (
+                      <span
+                        onClick={() => router.push(`/providers/${agent.provider_id}`)}
+                        style={{ color: "var(--accent)", cursor: "pointer", textDecoration: "underline", textDecorationStyle: "dotted" }}
+                      >
+                        {agent.provider_name ?? "Unknown"}
+                      </span>
+                    ) : (agent.provider_name ?? "Unknown")}
+                  </div>
                   <p style={{ fontSize: 15, color: "var(--t2)", lineHeight: 1.6, margin: 0 }}>{agent.description}</p>
                 </div>
                 <Btn onClick={() => router.push(localStorage.getItem("logged_in") ? "/dashboard?section=api-keys" : "/register")}>Use This Agent →</Btn>

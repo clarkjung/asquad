@@ -18,9 +18,37 @@ class ProviderResponse(BaseModel):
     id: uuid.UUID
     email: str
     company_name: str
+    title: str | None = None
+    bio: str | None = None
+    years_experience: int | None = None
+    linkedin_url: str | None = None
+    specialty: str | None = None
+    is_verified: bool = False
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class ProviderPublicProfile(BaseModel):
+    id: uuid.UUID
+    company_name: str
+    title: str | None = None
+    bio: str | None = None
+    years_experience: int | None = None
+    linkedin_url: str | None = None
+    specialty: str | None = None
+    is_verified: bool = False
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class ProviderProfileUpdate(BaseModel):
+    title: str | None = None
+    bio: str | None = None
+    years_experience: int | None = None
+    linkedin_url: str | None = None
+    specialty: str | None = None
 
 
 class TokenResponse(BaseModel):

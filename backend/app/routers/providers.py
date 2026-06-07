@@ -9,7 +9,7 @@ from app.database import get_db
 from app.dependencies import get_current_provider
 from app.models.provider import Provider
 from app.models.agent import Agent
-from app.schemas.provider import ProviderRegister, ProviderLogin, ProviderResponse, TokenResponse
+from app.schemas.provider import ProviderRegister, ProviderLogin, ProviderResponse, ProviderPublicProfile, ProviderProfileUpdate, TokenResponse
 from app.schemas.agent import AgentResponse
 from app.utils.auth import hash_password, verify_password, create_access_token
 
@@ -59,6 +59,37 @@ async def my_agents(
         select(Agent)
         .where(Agent.provider_id == provider.id, Agent.status != "inactive")
         .order_by(Agent.created_at.desc())
+    )
+    return list(result.scalars().all())
+
+
+@router.put("/me/profile", response_model=ProviderResponse)
+async def update_profile(
+    data: ProviderProfileUpdate,
+    provider: Provider = Depends(get_current_provider),
+    db: AsyncSession = Depends(get_db),
+):
+    for field, value in data.model_dump(exclude_none=True).items():
+        setattr(provider, field, value)
+    await db.commit()
+    await db.refresh(provider)
+    return provider
+
+
+@router.get("/{provider_id}/profile", response_model=ProviderPublicProfile)
+async def get_public_profile(provider_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+    provider = (await db.execute(select(Provider).where(Provider.id == provider_id))).scalar_one_or_none()
+    if not provider:
+        raise HTTPException(status_code=404, detail="Provider not found")
+    return provider
+
+
+@router.get("/{provider_id}/agents", response_model=list[AgentResponse])
+async def get_provider_agents(provider_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(Agent)
+        .where(Agent.provider_id == provider_id, Agent.status == "active")
+        .order_by(Agent.total_calls.desc())
     )
     return list(result.scalars().all())
 

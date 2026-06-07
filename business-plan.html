@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>asquad.ai — Business Plan 2026</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --accent: #4B6BFB;
+    --accent2: #7C3AED;
+    --bg: #0C0E1A;
+    --bg2: #131621;
+    --bg3: #1B1E2E;
+    --border: rgba(255,255,255,0.07);
+    --t1: #F0F1F8;
+    --t2: #9BA3C4;
+    --t3: #555B7A;
+    --green: #10B981;
+    --amber: #F59E0B;
+    --red: #EF4444;
+  }
+  body { background: var(--bg); color: var(--t1); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; height: 56px; background: rgba(12,14,26,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 48px; z-index: 100; }
+  .nav-logo { font-size: 18px; font-weight: 800; letter-spacing: -0.04em; background: linear-gradient(135deg, #4B6BFB, #7C3AED); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a { font-size: 13px; color: var(--t2); text-decoration: none; cursor: pointer; transition: color 0.15s; }
+  .nav-links a:hover { color: var(--t1); }
+
+  section { padding: 100px 48px; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; }
+  h1 { font-size: 56px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; }
+  h2 { font-size: 36px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 16px; }
+  h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--t1); }
+  p { color: var(--t2); font-size: 15px; line-height: 1.75; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+  /* HERO */
+  #hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding-top: 120px; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 12px; color: var(--t2); margin-bottom: 28px; width: fit-content; }
+  .hero-badge span { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; flex-shrink:0; }
+  .gradient-text { background: linear-gradient(135deg, #4B6BFB 0%, #7C3AED 50%, #EC4899 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-sub { font-size: 20px; color: var(--t2); margin: 24px 0 48px; max-width: 600px; line-height: 1.65; }
+  .hero-stats { display: flex; gap: 48px; flex-wrap: wrap; }
+  .hero-stat .num { font-size: 36px; font-weight: 800; letter-spacing: -0.03em; color: var(--t1); }
+  .hero-stat .lbl { font-size: 13px; color: var(--t3); margin-top: 2px; }
+
+  /* CARDS */
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 28px; }
+  .card-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; }
+  .card-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 40px; }
+  .card-icon { font-size: 28px; margin-bottom: 14px; }
+
+  /* PROBLEM */
+  .problem-list { margin-top: 40px; display: flex; flex-direction: column; gap: 16px; }
+  .problem-item { display: flex; gap: 20px; align-items: flex-start; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+  .problem-num { font-size: 32px; font-weight: 800; color: var(--red); opacity: 0.35; line-height: 1; flex-shrink: 0; width: 40px; }
+
+  /* FLOW */
+  .flow { display: flex; align-items: center; gap: 0; margin-top: 48px; flex-wrap: wrap; justify-content: center; }
+  .flow-node { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; text-align: center; min-width: 140px; }
+  .flow-node .icon { font-size: 28px; margin-bottom: 8px; }
+  .flow-node .title { font-size: 13px; font-weight: 700; color: var(--t1); }
+  .flow-node .sub { font-size: 11px; color: var(--t3); margin-top: 4px; }
+  .flow-node.highlight { border-color: var(--accent); background: rgba(75,107,251,0.1); }
+  .flow-arrow { font-size: 22px; color: var(--accent); padding: 0 8px; flex-shrink: 0; }
+
+  /* MARKET */
+  .market-wrapper { display: flex; align-items: center; justify-content: center; gap: 60px; margin-top: 48px; flex-wrap: wrap; }
+
+  /* GOLDEN SCENARIO */
+  .scenario-timeline { margin-top: 48px; display: flex; flex-direction: column; gap: 0; }
+  .scenario-step { display: flex; gap: 24px; }
+  .scenario-left { display: flex; flex-direction: column; align-items: center; width: 60px; flex-shrink: 0; }
+  .scenario-dot { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; border: 2px solid; }
+  .scenario-line { width: 2px; flex: 1; min-height: 32px; margin: 4px 0; }
+  .scenario-content { flex: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+  .scenario-meta { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+
+  /* FLYWHEEL */
+  .flywheel-wrap { display: flex; align-items: center; justify-content: center; margin-top: 48px; }
+  .flywheel { position: relative; width: 340px; height: 340px; }
+  .fw-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 100px; height: 100px; border-radius: 50%; background: rgba(75,107,251,0.15); border: 2px solid var(--accent); display: flex; align-items: center; justify-content: center; text-align: center; font-size: 12px; font-weight: 700; color: var(--accent); }
+  .fw-node { position: absolute; width: 110px; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; text-align: center; font-size: 12px; color: var(--t2); }
+  .fw-node strong { display: block; font-size: 13px; color: var(--t1); margin-bottom: 4px; }
+  .fw-arrow { position: absolute; font-size: 20px; color: var(--accent); }
+  .flywheel-legend { max-width: 280px; }
+  .flywheel-legend h3 { margin-bottom: 16px; }
+  .fw-leg-item { display: flex; gap: 12px; margin-bottom: 14px; }
+  .fw-leg-num { width: 24px; height: 24px; border-radius: 50%; background: rgba(75,107,251,0.15); border: 1px solid rgba(75,107,251,0.4); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: var(--accent); flex-shrink: 0; margin-top: 2px; }
+
+  /* CONSUMER PATHS */
+  .consumer-paths { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 40px; }
+  .consumer-path { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 12px; }
+  .path-badge { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; padding: 4px 10px; border-radius: 20px; width: fit-content; }
+  .path-steps { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .path-step { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: var(--t2); }
+  .path-step-num { width: 20px; height: 20px; border-radius: 50%; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--t3); flex-shrink: 0; margin-top: 1px; }
+  .path-note { font-size: 12px; padding: 10px 12px; border-radius: 8px; margin-top: 8px; }
+
+  /* APIFY */
+  .compare-table { margin-top: 48px; overflow-x: auto; }
+  .compare-table table { width: 100%; border-collapse: collapse; }
+  .compare-table th { padding: 14px 20px; font-size: 12px; font-weight: 700; color: var(--t3); letter-spacing: 0.05em; text-align: left; border-bottom: 1px solid var(--border); }
+  .compare-table td { padding: 14px 20px; font-size: 14px; border-bottom: 1px solid var(--border); color: var(--t2); }
+  .compare-table td:first-child { font-weight: 600; color: var(--t1); }
+  .compare-table tr.asquad-row td { background: rgba(75,107,251,0.06); }
+  .compare-table tr.asquad-row td:first-child { color: var(--accent); }
+  .win { color: var(--green); font-weight: 600; }
+  .insight-boxes { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 28px; }
+  .insight-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .insight-num { font-size: 28px; font-weight: 800; color: var(--accent); margin-bottom: 6px; }
+
+  /* COMPETITION */
+  .matrix { margin-top: 48px; overflow-x: auto; }
+  .matrix table { width: 100%; border-collapse: collapse; }
+  .matrix th { padding: 14px 16px; font-size: 12px; font-weight: 700; color: var(--t3); letter-spacing: 0.05em; text-align: center; border-bottom: 1px solid var(--border); }
+  .matrix td { padding: 14px 16px; font-size: 14px; text-align: center; border-bottom: 1px solid var(--border); color: var(--t2); }
+  .matrix td:first-child { text-align: left; font-weight: 600; color: var(--t1); }
+  .matrix tr.asquad-row td { background: rgba(75,107,251,0.06); }
+  .matrix tr.asquad-row td:first-child { color: var(--accent); }
+  .check { color: var(--green); font-size: 18px; }
+  .cross { color: var(--red); font-size: 18px; opacity: 0.5; }
+  .partial { color: var(--amber); font-size: 13px; }
+
+  /* GTM */
+  .gtm-phases { display: flex; flex-direction: column; gap: 16px; margin-top: 40px; }
+  .gtm-phase { display: flex; gap: 24px; align-items: flex-start; }
+  .gtm-num { width: 40px; height: 40px; border-radius: 10px; background: rgba(75,107,251,0.15); border: 1px solid rgba(75,107,251,0.3); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--accent); flex-shrink: 0; font-size: 16px; }
+  .gtm-content { flex: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
+  .gtm-meta { font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
+
+  /* ROADMAP */
+  .roadmap { margin-top: 48px; position: relative; }
+  .roadmap::before { content: ''; position: absolute; left: 119px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .roadmap-item { display: flex; gap: 32px; margin-bottom: 32px; position: relative; }
+  .roadmap-phase { width: 88px; text-align: right; flex-shrink: 0; padding-top: 4px; }
+  .roadmap-phase .time { font-size: 12px; font-weight: 700; color: var(--accent); }
+  .roadmap-phase .phase { font-size: 11px; color: var(--t3); margin-top: 2px; }
+  .roadmap-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); flex-shrink: 0; margin-top: 6px; z-index: 1; }
+  .roadmap-dot.done { background: var(--green); }
+  .roadmap-content { flex: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; }
+  .roadmap-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: var(--bg3); color: var(--t2); border: 1px solid var(--border); }
+  .tag.done { background: rgba(16,185,129,0.1); color: var(--green); border-color: rgba(16,185,129,0.3); }
+  .tag.accent { background: rgba(75,107,251,0.1); color: var(--accent); border-color: rgba(75,107,251,0.3); }
+
+  /* TEAM */
+  .team-row { display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap; }
+  .team-name { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px 32px; font-size: 18px; font-weight: 700; color: var(--t1); }
+
+  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+  @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+  footer { border-top: 1px solid var(--border); padding: 40px 48px; text-align: center; color: var(--t3); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">asquad.ai</div>
+  <div class="nav-links">
+    <a onclick="document.getElementById('problem').scrollIntoView({behavior:'smooth'})">Problem</a>
+    <a onclick="document.getElementById('solution').scrollIntoView({behavior:'smooth'})">Solution</a>
+    <a onclick="document.getElementById('golden').scrollIntoView({behavior:'smooth'})">Golden Scenario</a>
+    <a onclick="document.getElementById('consumer').scrollIntoView({behavior:'smooth'})">Consumers</a>
+    <a onclick="document.getElementById('market').scrollIntoView({behavior:'smooth'})">Market</a>
+    <a onclick="document.getElementById('apify').scrollIntoView({behavior:'smooth'})">Validation</a>
+    <a onclick="document.getElementById('gtm').scrollIntoView({behavior:'smooth'})">Go-to-Market</a>
+    <a onclick="document.getElementById('traction').scrollIntoView({behavior:'smooth'})">Traction</a>
+    <a onclick="document.getElementById('why').scrollIntoView({behavior:'smooth'})">Why asquad</a>
+    <a onclick="document.getElementById('ip').scrollIntoView({behavior:'smooth'})">IP Protection</a>
+    <a onclick="document.getElementById('roadmap').scrollIntoView({behavior:'smooth'})">Roadmap</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-badge"><span></span> Live at asquad.ai · Built in 6 sprints</div>
+  <h1>The <span class="gradient-text">Marketplace</span><br/>for AI Skills</h1>
+  <p class="hero-sub">Domain experts monetize their AI skills. Developers integrate them in one API call. Any AI, any platform — powered by the A2A protocol.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">Apify</div><div class="lbl">Proof this model works ($1M+/mo payouts)</div></div>
+    <div class="hero-stat"><div class="num">0 code</div><div class="lbl">needed to publish a skill</div></div>
+    <div class="hero-stat"><div class="num">A2A</div><div class="lbl">Protocol — any AI can call it</div></div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="section-label">The Problem</div>
+  <h2>AI is powerful.<br/>But generic — and expertise can't be monetized.</h2>
+  <div class="problem-list">
+    <div class="problem-item">
+      <div class="problem-num">01</div>
+      <div>
+        <h3>Experts can't monetize their AI skills</h3>
+        <p>A lawyer who's spent 3 years perfecting a contract analysis prompt has no way to sell that expertise. A doctor who's built a triage workflow can't earn from it. Prompt engineering talent has zero distribution channels today.</p>
+      </div>
+    </div>
+    <div class="problem-item">
+      <div class="problem-num">02</div>
+      <div>
+        <h3>Developers rebuild the same AI capabilities over and over</h3>
+        <p>Every team building an AI-powered app wastes weeks on prompt engineering for skills others have already solved. There's no "npm install legal-reviewer" for AI. Each team starts from scratch.</p>
+      </div>
+    </div>
+    <div class="problem-item">
+      <div class="problem-num">03</div>
+      <div>
+        <h3>AI agents can't find specialized skills</h3>
+        <p>The future is AI agents collaborating — but there's no standard registry where an orchestrator can discover and call a specialized skill agent. The infrastructure doesn't exist yet. We're building it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="section-label">The Solution</div>
+  <h2>Stripe for AI skills.</h2>
+  <p>Write a system prompt in Markdown. Upload it. asquad hosts, runs (via Claude Haiku), and bills every call. Providers earn passively. Consumers get instant access to specialized AI via API.</p>
+
+  <div class="flow">
+    <div class="flow-node">
+      <div class="icon">🧑‍⚕️</div>
+      <div class="title">Domain Expert</div>
+      <div class="sub">Uploads Markdown skill</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node highlight">
+      <div class="icon">⚡</div>
+      <div class="title">asquad.ai</div>
+      <div class="sub">Hosts · Runs · Bills</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="icon">🤖</div>
+      <div class="title">Claude Haiku</div>
+      <div class="sub">LLM execution (~$0.002/call)</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-node">
+      <div class="icon">👨‍💻</div>
+      <div class="title">Developer / Agent</div>
+      <div class="sub">Calls via A2A / REST</div>
+    </div>
+  </div>
+
+  <div class="card-grid-3" style="margin-top:48px;">
+    <div class="card">
+      <div class="card-icon">📄</div>
+      <h3>Upload a Skill</h3>
+      <p>Write your system prompt in Markdown. No code. Define what the agent does, how it responds, what format it uses.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔌</div>
+      <h3>Instant A2A Endpoint</h3>
+      <p>asquad auto-generates a standard A2A-compatible endpoint. Live on the marketplace immediately after upload.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">💰</div>
+      <h3>Earn Per Call</h3>
+      <p>Every API call generates revenue for the provider. asquad handles billing, metering, and monthly payouts automatically.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- GOLDEN SCENARIO -->
+<section id="golden">
+  <div class="section-label">Golden Scenario</div>
+  <h2>How the flywheel starts.</h2>
+  <p>The scenario where everything clicks — and the network effect begins.</p>
+
+  <div class="scenario-timeline">
+
+    <div class="scenario-step">
+      <div class="scenario-left">
+        <div class="scenario-dot" style="background:rgba(75,107,251,0.15);border-color:var(--accent);color:var(--accent);">1</div>
+        <div class="scenario-line" style="background:linear-gradient(to bottom, var(--accent), var(--border));"></div>
+      </div>
+      <div class="scenario-content">
+        <div class="scenario-meta" style="color:var(--accent);">Day 1 — Supply</div>
+        <h3>A contract lawyer uploads her skill</h3>
+        <p>10 years of contract law expertise, 2 years of prompt refinement. She uploads a Markdown file to asquad in 10 minutes. No code. Her skill: contract risk analysis with jurisdiction-aware flagging. Instantly live on the marketplace.</p>
+      </div>
+    </div>
+
+    <div class="scenario-step">
+      <div class="scenario-left">
+        <div class="scenario-dot" style="background:rgba(16,185,129,0.15);border-color:var(--green);color:var(--green);">2</div>
+        <div class="scenario-line" style="background:linear-gradient(to bottom, var(--green), var(--border));"></div>
+      </div>
+      <div class="scenario-content">
+        <div class="scenario-meta" style="color:var(--green);">Week 2 — Integration</div>
+        <h3>A legal SaaS startup discovers it</h3>
+        <p>A developer building a contract management tool finds the skill on asquad. Three lines of API code. Their app now has expert-level contract review — without hiring a lawyer or spending weeks on prompt engineering.</p>
+        <div style="background:var(--bg3);border-radius:8px;padding:14px 16px;margin-top:12px;font-family:monospace;font-size:12px;color:var(--t2);">
+          POST api.asquad.ai/v1/agents/{id}/a2a<br/>
+          → { "text": "Review this contract..." }<br/>
+          <span style="color:var(--green);">← Structured risk analysis in 1.2s</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-step">
+      <div class="scenario-left">
+        <div class="scenario-dot" style="background:rgba(245,158,11,0.15);border-color:var(--amber);color:var(--amber);">3</div>
+        <div class="scenario-line" style="background:linear-gradient(to bottom, var(--amber), var(--border));"></div>
+      </div>
+      <div class="scenario-content">
+        <div class="scenario-meta" style="color:var(--amber);">Month 3 — Revenue</div>
+        <h3>10,000 calls/month. Passive income.</h3>
+        <p>The startup's customers love it. Usage grows. The lawyer earns $500/month — without doing anything. She tells other lawyers. Word spreads in legal communities on LinkedIn and Twitter.</p>
+        <div class="card-grid-3" style="margin-top:16px;">
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;text-align:center;">
+            <div style="font-size:24px;font-weight:800;color:var(--t1);">10K</div>
+            <div style="font-size:11px;color:var(--t3);margin-top:4px;">API calls/month</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;text-align:center;">
+            <div style="font-size:24px;font-weight:800;color:var(--green);">$500</div>
+            <div style="font-size:11px;color:var(--t3);margin-top:4px;">Provider earns/month</div>
+          </div>
+          <div style="background:var(--bg3);border-radius:10px;padding:16px;text-align:center;">
+            <div style="font-size:24px;font-weight:800;color:var(--accent);">$0</div>
+            <div style="font-size:11px;color:var(--t3);margin-top:4px;">Code written by lawyer</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-step">
+      <div class="scenario-left">
+        <div class="scenario-dot" style="background:rgba(124,58,237,0.15);border-color:#7C3AED;color:#7C3AED;">4</div>
+        <div class="scenario-line" style="background:linear-gradient(to bottom, #7C3AED, var(--border));"></div>
+      </div>
+      <div class="scenario-content">
+        <div class="scenario-meta" style="color:#7C3AED;">Month 6 — Category Dominance</div>
+        <h3>asquad becomes "the legal AI skill destination"</h3>
+        <p>50 legal skills now live on the marketplace. Contract review, IP analysis, employment law, M&A due diligence. Any developer building a legal app goes to asquad first. Category flywheel locked in.</p>
+      </div>
+    </div>
+
+    <div class="scenario-step">
+      <div class="scenario-left">
+        <div class="scenario-dot" style="background:rgba(236,72,153,0.15);border-color:#EC4899;color:#EC4899;">5</div>
+        <div class="scenario-line" style="background:var(--border);"></div>
+      </div>
+      <div class="scenario-content">
+        <div class="scenario-meta" style="color:#EC4899;">Year 1 — Protocol Layer</div>
+        <h3>AI agents autonomously call asquad skills</h3>
+        <p>MCP server launched. Claude Code users install once — Claude now automatically routes legal questions to asquad's legal agents. A2A registry live. Gemini, GPT agents discover asquad skills without human intervention. asquad becomes infrastructure.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Flywheel -->
+  <div style="margin-top:60px;">
+    <div style="font-size:14px;font-weight:600;color:var(--t2);text-align:center;margin-bottom:32px;">The Network Effect Flywheel</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <div style="background:rgba(75,107,251,0.1);border:1px solid rgba(75,107,251,0.3);border-radius:12px;padding:16px 20px;text-align:center;width:160px;">
+          <div style="font-size:20px;margin-bottom:6px;">🧑‍💼</div>
+          <div style="font-size:13px;font-weight:700;color:var(--t1);">More Providers</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:3px;">Upload high-quality skills</div>
+        </div>
+      </div>
+      <div style="font-size:24px;color:var(--accent);padding:0 12px;transform:rotate(0deg);">→</div>
+      <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:12px;padding:16px 20px;text-align:center;width:160px;">
+        <div style="font-size:20px;margin-bottom:6px;">🛒</div>
+        <div style="font-size:13px;font-weight:700;color:var(--t1);">Richer Marketplace</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px;">More unique, specialized skills</div>
+      </div>
+      <div style="font-size:24px;color:var(--green);padding:0 12px;">→</div>
+      <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);border-radius:12px;padding:16px 20px;text-align:center;width:160px;">
+        <div style="font-size:20px;margin-bottom:6px;">👨‍💻</div>
+        <div style="font-size:13px;font-weight:700;color:var(--t1);">More Consumers</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px;">Developers integrate via API</div>
+      </div>
+      <div style="font-size:24px;color:var(--amber);padding:0 12px;">→</div>
+      <div style="background:rgba(236,72,153,0.1);border:1px solid rgba(236,72,153,0.3);border-radius:12px;padding:16px 20px;text-align:center;width:160px;">
+        <div style="font-size:20px;margin-bottom:6px;">💰</div>
+        <div style="font-size:13px;font-weight:700;color:var(--t1);">Provider Revenue</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px;">Attracting more experts</div>
+      </div>
+      <div style="font-size:24px;color:#EC4899;padding:0 12px;">↩</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- CONSUMER JOURNEY -->
+<section id="consumer">
+  <div class="section-label">Consumer Journey</div>
+  <h2>Three ways people<br/>use asquad skills.</h2>
+  <p>Regular users don't need to know about asquad. They experience it through the products built on top of it — just like they don't know Stripe powers their checkout.</p>
+
+  <div class="consumer-paths">
+
+    <div class="consumer-path" style="border-color:rgba(75,107,251,0.3);">
+      <div class="path-badge" style="background:rgba(75,107,251,0.1);color:var(--accent);">PATH A — Direct</div>
+      <h3 style="font-size:15px;">Try It Playground</h3>
+      <p style="font-size:13px;">Non-technical users access skills directly on asquad.ai without an API key.</p>
+      <div class="path-steps">
+        <div class="path-step"><div class="path-step-num">1</div>Browse marketplace</div>
+        <div class="path-step"><div class="path-step-num">2</div>Find a legal / medical / coding skill</div>
+        <div class="path-step"><div class="path-step-num">3</div>Type query → Get answer instantly</div>
+      </div>
+      <div class="path-note" style="background:rgba(75,107,251,0.08);color:var(--t2);">✓ Works today. No account needed for Try It.</div>
+    </div>
+
+    <div class="consumer-path" style="border-color:rgba(16,185,129,0.3);">
+      <div class="path-badge" style="background:rgba(16,185,129,0.1);color:var(--green);">PATH B — Via Apps (Primary)</div>
+      <h3 style="font-size:15px;">Embedded in Products</h3>
+      <p style="font-size:13px;">Developers build apps powered by asquad skills. End users never see asquad — they just use the product.</p>
+      <div class="path-steps">
+        <div class="path-step"><div class="path-step-num">1</div>User opens a legal SaaS, HR tool, etc.</div>
+        <div class="path-step"><div class="path-step-num">2</div>App calls asquad API in the background</div>
+        <div class="path-step"><div class="path-step-num">3</div>User gets expert AI response</div>
+      </div>
+      <div class="path-note" style="background:rgba(16,185,129,0.08);color:var(--t2);">✓ Like Stripe — invisible infrastructure, visible value.</div>
+    </div>
+
+    <div class="consumer-path" style="border-color:rgba(124,58,237,0.3);">
+      <div class="path-badge" style="background:rgba(124,58,237,0.1);color:#7C3AED;">PATH C — Via AI Agents (Future)</div>
+      <h3 style="font-size:15px;">Agent-to-Agent (A2A)</h3>
+      <p style="font-size:13px;">Users chat with Claude or Gemini. The AI auto-discovers and calls asquad skills via MCP / A2A protocol.</p>
+      <div class="path-steps">
+        <div class="path-step"><div class="path-step-num">1</div>"Claude, review this contract for risks"</div>
+        <div class="path-step"><div class="path-step-num">2</div>Claude calls asquad Legal Agent (MCP)</div>
+        <div class="path-step"><div class="path-step-num">3</div>Expert analysis, cited back to user</div>
+      </div>
+      <div class="path-note" style="background:rgba(124,58,237,0.08);color:var(--t2);">⏳ Requires MCP server launch — Q1 2027 roadmap.</div>
+    </div>
+
+  </div>
+
+  <div class="card" style="margin-top:24px;background:rgba(75,107,251,0.05);border-color:rgba(75,107,251,0.2);">
+    <div style="display:flex;gap:16px;align-items:flex-start;">
+      <div style="font-size:28px;flex-shrink:0;">💡</div>
+      <div>
+        <h3 style="margin-bottom:8px;">The honest answer about consumer discovery</h3>
+        <p>Today, regular consumers reach asquad skills through <strong style="color:var(--t1);">Path B</strong> — apps developers build on top of asquad. This is intentional. asquad's primary customer is the developer, not the end user. The end user experiences the value without knowing the infrastructure. Path C (AI agents auto-discovering asquad) is the long-term vision — powered by the A2A protocol and MCP integration.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- MARKET -->
+<section id="market">
+  <div class="section-label">Market Opportunity</div>
+  <h2>A $500B market at the intersection<br/>of AI expertise + APIs</h2>
+
+  <div class="market-wrapper">
+    <div style="position:relative;width:300px;height:300px;flex-shrink:0;">
+      <div style="position:absolute;top:0;left:0;width:300px;height:300px;border-radius:50%;background:rgba(75,107,251,0.06);border:2px solid rgba(75,107,251,0.2);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:20px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.05em;color:rgba(75,107,251,0.5);">TAM</div>
+        <div style="font-size:18px;font-weight:800;color:var(--t1);">$500B</div>
+      </div>
+      <div style="position:absolute;top:50px;left:50px;width:200px;height:200px;border-radius:50%;background:rgba(75,107,251,0.1);border:2px solid rgba(75,107,251,0.4);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:18px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.05em;color:rgba(75,107,251,0.7);">SAM</div>
+        <div style="font-size:16px;font-weight:800;color:var(--t1);">$50B</div>
+      </div>
+      <div style="position:absolute;top:100px;left:100px;width:100px;height:100px;border-radius:50%;background:rgba(75,107,251,0.22);border:2px solid var(--accent);display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.05em;color:var(--accent);">SOM</div>
+        <div style="font-size:14px;font-weight:800;color:var(--t1);">$2B</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:20px;max-width:340px;">
+      <div style="display:flex;gap:14px;">
+        <div style="width:12px;height:12px;border-radius:50%;background:rgba(75,107,251,0.3);border:2px solid rgba(75,107,251,0.5);flex-shrink:0;margin-top:4px;"></div>
+        <div><div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:2px;">TAM — $500B</div><div style="font-size:13px;color:var(--t3);">Global AI services market by 2030 (IDC)</div></div>
+      </div>
+      <div style="display:flex;gap:14px;">
+        <div style="width:12px;height:12px;border-radius:50%;background:rgba(75,107,251,0.5);border:2px solid rgba(75,107,251,0.7);flex-shrink:0;margin-top:4px;"></div>
+        <div><div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:2px;">SAM — $50B</div><div style="font-size:13px;color:var(--t3);">AI agent API & automation market</div></div>
+      </div>
+      <div style="display:flex;gap:14px;">
+        <div style="width:12px;height:12px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:4px;"></div>
+        <div><div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:2px;">SOM — $2B</div><div style="font-size:13px;color:var(--t3);">Specialized AI skill marketplace (5yr target)</div></div>
+      </div>
+      <div style="padding:16px;background:var(--bg3);border-radius:10px;border:1px solid var(--border);margin-top:4px;">
+        <div style="font-size:12px;color:var(--t3);margin-bottom:4px;">Market tailwind</div>
+        <div style="font-size:14px;color:var(--t1);font-weight:600;">AI agent API spending growing 40% YoY. Prompt engineering becoming a recognized profession.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- APIFY VALIDATION -->
+<section id="apify">
+  <div class="section-label">Market Validation</div>
+  <h2>Apify proved this model works.<br/>We do it for AI skills.</h2>
+  <p>Apify is a marketplace where developers publish automation "Actors" and earn per execution. $1M+ monthly payouts to 2,000+ developers. 36,000+ community-built tools. Same model — different layer.</p>
+
+  <div class="compare-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th>Apify</th>
+          <th>asquad.ai</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>What's published</td>
+          <td>Automation code (Actors)</td>
+          <td class="win">AI skill prompts (Markdown)</td>
+        </tr>
+        <tr>
+          <td>Who can publish</td>
+          <td>Developers only (must code)</td>
+          <td class="win">Anyone — lawyers, doctors, analysts</td>
+        </tr>
+        <tr>
+          <td>Time to publish</td>
+          <td>Hours to days</td>
+          <td class="win">10 minutes</td>
+        </tr>
+        <tr>
+          <td>Revenue model</td>
+          <td>Compute time billing</td>
+          <td>Per API call billing</td>
+        </tr>
+        <tr class="asquad-row">
+          <td>Key advantage</td>
+          <td>Established marketplace</td>
+          <td class="win">Zero code barrier + AI-native protocol (A2A)</td>
+        </tr>
+        <tr>
+          <td>Focus area</td>
+          <td>Web scraping, data</td>
+          <td class="win">AI skills — unlimited verticals</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="insight-boxes">
+    <div class="insight-box">
+      <div class="insight-num">$1M+</div>
+      <h3 style="font-size:14px;">Monthly payouts</h3>
+      <p style="font-size:13px;">Apify pays out $1M+/month to community developers. Proof that the marketplace model generates real income for creators.</p>
+    </div>
+    <div class="insight-box">
+      <div class="insight-num">36K+</div>
+      <h3 style="font-size:14px;">Community Actors</h3>
+      <p style="font-size:13px;">Supply explodes when the barrier is low and the incentive is real. asquad lowers the bar even further — no code required.</p>
+    </div>
+    <div class="insight-box">
+      <div class="insight-num">10min</div>
+      <h3 style="font-size:14px;">Time to publish on asquad</h3>
+      <p style="font-size:13px;">Apify requires coding. asquad requires a Markdown file. This unlocks an entirely new category of publishers: domain experts.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:24px;border-color:rgba(16,185,129,0.2);background:rgba(16,185,129,0.04);">
+    <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:8px;">The key insight</div>
+    <p>Apify's publishers are developers. asquad's publishers are <strong style="color:var(--t1);">everyone with domain expertise</strong>. By removing the code requirement, we open the marketplace to millions of lawyers, doctors, financial analysts, and subject-matter experts who currently have no way to monetize their AI workflows.</p>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- COMPETITION -->
+<section id="competition">
+  <div class="section-label">Competitive Landscape</div>
+  <h2>No one owns this position yet.</h2>
+  <div class="matrix">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left;">Platform</th>
+          <th>Open Marketplace</th>
+          <th>Anyone Uploads Skills</th>
+          <th>Provider Earns</th>
+          <th>Multi-AI Compatible</th>
+          <th>A2A Protocol</th>
+          <th>No Code to Publish</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="asquad-row">
+          <td>⚡ asquad.ai</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Apify</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="partial">Limited</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+        </tr>
+        <tr>
+          <td>pstack (Cursor)</td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="partial">Markdown</span></td>
+        </tr>
+        <tr>
+          <td>OpenAI GPT Store</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Hugging Face</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="partial">Models only</span></td>
+          <td><span class="partial">Limited</span></td>
+          <td><span class="partial">Partial</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+        </tr>
+        <tr>
+          <td>Claude.ai Skills</td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="cross">✗</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- GO TO MARKET -->
+<section id="gtm">
+  <div class="section-label">Go-to-Market</div>
+  <h2>Provider first.<br/>Developer consumers follow.</h2>
+  <p>Classic two-sided marketplace playbook: build supply first. Unique, high-quality skills attract developer consumers organically. Start narrow, go deep.</p>
+
+  <div class="gtm-phases">
+    <div class="gtm-phase">
+      <div class="gtm-num">1</div>
+      <div class="gtm-content">
+        <div class="gtm-meta">Month 1–3 · Supply Building</div>
+        <h3>Recruit 20 domain expert providers. Get 50 skills live.</h3>
+        <p>Directly contact prompt engineers, lawyers, medical professionals, financial analysts active on Twitter/LinkedIn. Offer: revenue share + "Founding Provider" badge + featured placement. Personally onboard each one. The goal is not quantity — it's <em>quality skills that developers can't build themselves</em>.</p>
+      </div>
+    </div>
+    <div class="gtm-phase">
+      <div class="gtm-num">2</div>
+      <div class="gtm-content">
+        <div class="gtm-meta">Month 3–6 · Developer Outreach</div>
+        <h3>Target developers building AI-powered B2B SaaS.</h3>
+        <p>Hacker News, Indie Hackers, AI Discord communities. Message: "Add expert-level AI to your app in 3 lines of code." Show working demos. Prove ROI vs. building in-house. Goal: 50 active API consumers, first $1K MRR.</p>
+      </div>
+    </div>
+    <div class="gtm-phase">
+      <div class="gtm-num">3</div>
+      <div class="gtm-content">
+        <div class="gtm-meta">Month 6–12 · Protocol Integration</div>
+        <h3>Launch MCP server. Register as A2A directory.</h3>
+        <p>Publish asquad MCP server so Claude Code users can install once and access all marketplace skills automatically. Claude now routes specialized queries to asquad. Register as an A2A-compatible agent directory for broader AI ecosystem access.</p>
+      </div>
+    </div>
+    <div class="gtm-phase">
+      <div class="gtm-num">4</div>
+      <div class="gtm-content">
+        <div class="gtm-meta">Year 2 · Platform Partnerships</div>
+        <h3>Enterprise tier + IDE integrations.</h3>
+        <p>Cursor, Windsurf, VS Code plugins. Enterprise private skill deployment with SLA. Partner with vertical SaaS companies (legal tech, health tech, fintech) as distribution channel. Target $1M ARR.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- WHY ASQUAD -->
+<section id="why">
+  <div class="section-label">Why asquad?</div>
+  <h2>Why not just use<br/>Claude API directly?</h2>
+  <p>This is the most important question to answer. The honest answer — and the real value proposition.</p>
+
+  <!-- Side by side comparison -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:48px;">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;color:var(--t3);margin-bottom:16px;">OPTION A — Claude API Directly</div>
+      <div style="font-size:15px;font-weight:700;color:var(--t1);margin-bottom:16px;">Build a contract reviewer yourself</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--t2);">
+          <span style="color:var(--red);flex-shrink:0;margin-top:1px;">✗</span>
+          Week 1–2: Research what makes a good legal prompt. Read papers, iterate.
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--t2);">
+          <span style="color:var(--red);flex-shrink:0;margin-top:1px;">✗</span>
+          Week 3: Test with real contracts. Results are generic, miss jurisdiction-specific nuances.
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--t2);">
+          <span style="color:var(--red);flex-shrink:0;margin-top:1px;">✗</span>
+          Week 4: Still iterating. Consult an actual lawyer to validate. Expensive.
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--t2);">
+          <span style="color:var(--red);flex-shrink:0;margin-top:1px;">✗</span>
+          Ongoing: Maintain your prompt as Claude updates. Re-test every major version.
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--t2);">
+          <span style="color:var(--red);flex-shrink:0;margin-top:1px;">✗</span>
+          Manage your own API keys, rate limits, error handling.
+        </div>
+      </div>
+      <div style="margin-top:20px;padding:14px;background:rgba(239,68,68,0.08);border-radius:10px;border:1px solid rgba(239,68,68,0.2);">
+        <div style="font-size:12px;font-weight:700;color:var(--red);">TOTAL COST</div>
+        <div style="font-size:20px;font-weight:800;color:var(--t1);margin-top:4px;">4+ weeks · $5–10K developer time</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:2px;">+ ongoing maintenance · mediocre domain expertise</div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg2);border:2px solid rgba(75,107,251,0.4);border-radius:16px;padding:28px;">
+      <div style="font-size:12px;font-weight:700;letter-spacing:0.06em;color:var(--accent);margin-bottom:16px;">OPTION B — asquad.ai</div>
+      <div style="font-size:15px;font-weight:700;color:var(--t1);margin-bottom:16px;">Use the expert-built skill</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--t2);">
+          <span style="color:var(--green);flex-shrink:0;margin-top:1px;">✓</span>
+          Day 1: Browse marketplace. Find "Contract Reviewer" — written by ex-BigLaw attorney with 10 yrs experience.
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--t2);">
+          <span style="color:var(--green);flex-shrink:0;margin-top:1px;">✓</span>
+          3 lines of code. One API key. Production-ready in hours, not weeks.
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--t2);">
+          <span style="color:var(--green);flex-shrink:0;margin-top:1px;">✓</span>
+          Domain expert maintains the skill. You get improvements automatically.
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--t2);">
+          <span style="color:var(--green);flex-shrink:0;margin-top:1px;">✓</span>
+          Reviews from 200+ other developers. Validated quality.
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--t2);">
+          <span style="color:var(--green);flex-shrink:0;margin-top:1px;">✓</span>
+          Rate limiting, error handling, usage analytics — all built in.
+        </div>
+      </div>
+      <div style="margin-top:20px;padding:14px;background:rgba(16,185,129,0.08);border-radius:10px;border:1px solid rgba(16,185,129,0.2);">
+        <div style="font-size:12px;font-weight:700;color:var(--green);">TOTAL COST</div>
+        <div style="font-size:20px;font-weight:800;color:var(--t1);margin-top:4px;">Hours · $0.01/call</div>
+        <div style="font-size:12px;color:var(--t3);margin-top:2px;">+ domain expertise included · zero maintenance</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Code comparison -->
+  <div style="margin-top:32px;">
+    <div style="font-size:14px;font-weight:600;color:var(--t2);margin-bottom:16px;">In code, the difference is this:</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--t3);letter-spacing:0.06em;margin-bottom:8px;">CLAUDE API DIRECTLY</div>
+        <div style="background:var(--bg3);border-radius:10px;padding:16px;font-family:monospace;font-size:12px;line-height:1.7;color:var(--t2);">
+          <span style="color:var(--t3)"># You write and maintain this prompt yourself</span><br/>
+          system = <span style="color:var(--amber);">"""<br/>
+          You are a legal expert who reviews...<br/>
+          [hundreds of lines you researched,<br/>
+          tested, and validated yourself]<br/>
+          """</span><br/><br/>
+          client = anthropic.Anthropic(<br/>
+          &nbsp;&nbsp;api_key=<span style="color:var(--amber);">"YOUR_KEY"</span><br/>
+          )<br/>
+          response = client.messages.create(<br/>
+          &nbsp;&nbsp;model=<span style="color:var(--amber);">"claude-haiku..."</span>,<br/>
+          &nbsp;&nbsp;system=system,<br/>
+          &nbsp;&nbsp;messages=[...]<br/>
+          )
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.06em;margin-bottom:8px;">ASQUAD API</div>
+        <div style="background:var(--bg3);border-radius:10px;padding:16px;font-family:monospace;font-size:12px;line-height:1.7;color:var(--t2);">
+          <span style="color:var(--t3)"># Expert prompt already built. Just call it.</span><br/><br/>
+          response = requests.post(<br/>
+          &nbsp;&nbsp;<span style="color:var(--amber);">"https://api.asquad.ai<br/>
+          &nbsp;&nbsp;&nbsp;/v1/agents/{id}/a2a"</span>,<br/>
+          &nbsp;&nbsp;headers={<span style="color:var(--amber);">"Authorization"</span>:<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--amber);">"Bearer asq_live_xxx"</span>},<br/>
+          &nbsp;&nbsp;json={<span style="color:var(--amber);">"text"</span>: contract_text}<br/>
+          )<br/><br/>
+          <span style="color:var(--green)"># Done. Expert-level review returned.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6 advantages -->
+  <div style="margin-top:40px;">
+    <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:20px;">6 reasons developers choose asquad over raw Claude API</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-size:20px;margin-bottom:10px;">🧑‍⚕️</div>
+        <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:6px;">Real Domain Expertise</div>
+        <p style="font-size:13px;">The prompt was written by an actual lawyer, doctor, or financial analyst — not a developer guessing at domain requirements.</p>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-size:20px;margin-bottom:10px;">⚡</div>
+        <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:6px;">Zero Prompt Engineering</div>
+        <p style="font-size:13px;">No weeks of research and iteration. The skill is already production-tested and refined. Ship in hours, not months.</p>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-size:20px;margin-bottom:10px;">🔑</div>
+        <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:6px;">One Key, All Skills</div>
+        <p style="font-size:13px;">One asquad API key gives access to every skill on the marketplace. No managing multiple LLM provider keys.</p>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-size:20px;margin-bottom:10px;">🔄</div>
+        <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:6px;">Auto-maintained</div>
+        <p style="font-size:13px;">Providers update their skills as AI models evolve. You get the latest version automatically — no maintenance cost.</p>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-size:20px;margin-bottom:10px;">📊</div>
+        <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:6px;">Built-in Analytics</div>
+        <p style="font-size:13px;">Latency tracking, success rates, usage per skill. Know exactly how your AI integrations are performing without building monitoring yourself.</p>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-size:20px;margin-bottom:10px;">🤖</div>
+        <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:6px;">A2A Compatible</div>
+        <p style="font-size:13px;">Every skill follows the A2A protocol. Your orchestrator agent can call any asquad skill without custom integration code.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skill format evolution -->
+  <div style="margin-top:32px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;">
+    <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:6px;">How skills actually work — injection, not training</div>
+    <p style="margin-bottom:20px;">Claude is not fine-tuned or retrained. The skill's contents are <strong style="color:var(--t1);">injected into the context window on every API call</strong>. system.md becomes the system prompt. examples.jsonl becomes few-shot demonstrations. Claude reads them fresh each time and responds accordingly.</p>
+    <div style="background:var(--bg3);border-radius:10px;padding:16px;font-family:monospace;font-size:12px;line-height:1.8;color:var(--t2);margin-bottom:20px;">
+      <span style="color:var(--t3);"># What asquad sends to Claude on every call</span><br/>
+      anthropic.messages.create(<br/>
+      &nbsp;&nbsp;system = <span style="color:var(--green);">system.md content</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← provider's expertise<br/>
+      &nbsp;&nbsp;messages = [<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span style="color:var(--amber);">...examples from examples.jsonl</span>,&nbsp;&nbsp;← few-shot demonstrations<br/>
+      &nbsp;&nbsp;&nbsp;&nbsp;{<span style="color:var(--accent);">"role": "user", "content": user_input</span>} ← actual question<br/>
+      &nbsp;&nbsp;],<br/>
+      &nbsp;&nbsp;tools = <span style="color:#EC4899);">tools.json</span>,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;← external API calls<br/>
+      &nbsp;&nbsp;model = <span style="color:var(--t2);">skill.yaml → model field</span><br/>
+      )
+    </div>
+    <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:12px;">Markdown today, Skill Package tomorrow — the UI hides the complexity</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+      <div style="background:var(--bg3);border-radius:10px;padding:16px;border:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:700;color:var(--green);letter-spacing:0.06em;margin-bottom:8px;">TIER 1 · Anyone</div>
+        <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px;">Markdown textarea</div>
+        <p style="font-size:12px;">Write your expertise as plain text. Lawyers, doctors, analysts — no tech required. Already live today.</p>
+      </div>
+      <div style="background:var(--bg3);border-radius:10px;padding:16px;border:1px solid rgba(75,107,251,0.3);">
+        <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.06em;margin-bottom:8px;">TIER 2 · Guided UI</div>
+        <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px;">Form-based builder</div>
+        <p style="font-size:12px;">Add examples row by row. Pick output format from a dropdown. Set temperature with a slider. asquad generates the package files — user never sees YAML.</p>
+      </div>
+      <div style="background:var(--bg3);border-radius:10px;padding:16px;border:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:700;color:var(--t3);letter-spacing:0.06em;margin-bottom:8px;">TIER 3 · Developers</div>
+        <div style="font-size:13px;font-weight:600;color:var(--t1);margin-bottom:6px;">ZIP upload / CLI</div>
+        <p style="font-size:12px;">Full Skill Package with YAML, JSONL, JSON schema. Tool definitions for external API calls. Version control via CLI.</p>
+      </div>
+    </div>
+    <div style="background:rgba(75,107,251,0.07);border:1px solid rgba(75,107,251,0.2);border-radius:10px;padding:14px 16px;">
+      <span style="font-size:13px;color:var(--t2);">💡 <strong style="color:var(--t1);">Key insight:</strong> The file format doesn't matter to the provider — the UI abstracts it. A lawyer filling out a guided form is creating a Skill Package without knowing it. Like Webflow lets designers build complex websites without writing HTML.</span>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- IP PROTECTION -->
+<section id="ip">
+  <div class="section-label">Provider IP Protection</div>
+  <h2>Your prompt is your product.<br/>We protect it.</h2>
+  <p>The biggest concern for expert providers: "What if someone copies my prompt?" asquad's answer is a multi-layer protection system — technical, legal, and economic.</p>
+
+  <!-- How prompt works + risk -->
+  <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:16px;padding:28px;margin-top:40px;">
+    <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:8px;">⚠ The Real Risk</div>
+    <p>Skills are system prompts injected into Claude at runtime — not trained into a model. In theory, a sophisticated consumer could try to reverse-engineer the prompt by observing many outputs. This is the honest vulnerability we must address.</p>
+  </div>
+
+  <!-- Protection layers -->
+  <div style="margin-top:24px;display:flex;flex-direction:column;gap:16px;">
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;">
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div style="width:44px;height:44px;border-radius:12px;background:rgba(75,107,251,0.15);border:1px solid rgba(75,107,251,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🔐</div>
+        <div style="flex:1;">
+          <h3 style="margin-bottom:6px;">Layer 1 — Prompt Encryption</h3>
+          <p style="margin-bottom:14px;">All skill prompts are encrypted at rest (AES-256). The raw prompt text is never exposed to consumers — not in API responses, not in error messages, not anywhere. Consumers only receive the output, never the system prompt.</p>
+          <div style="background:var(--bg3);border-radius:8px;padding:14px;font-family:monospace;font-size:12px;line-height:1.7;color:var(--t2);">
+            <span style="color:var(--t3);"># What consumers see via API</span><br/>
+            GET /api/v1/agents/{id}<br/>
+            → {<br/>
+            &nbsp;&nbsp;"name": "Contract Reviewer",<br/>
+            &nbsp;&nbsp;"description": "...",<br/>
+            &nbsp;&nbsp;"skill_prompt": <span style="color:var(--red);">null</span>&nbsp;&nbsp;<span style="color:var(--t3);">← never exposed</span><br/>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;">
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div style="width:44px;height:44px;border-radius:12px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🔒</div>
+        <div style="flex:1;">
+          <h3 style="margin-bottom:6px;">Layer 2 — Private Mode</h3>
+          <p>Providers choose: <strong style="color:var(--t1);">Public</strong> (listed on marketplace, prompt hidden) or <strong style="color:var(--t1);">Private</strong> (unlisted, invite-only API access). Enterprise providers can keep skills completely off the public marketplace and share only with approved consumers.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;">
+            <div style="background:var(--bg3);border-radius:8px;padding:14px;">
+              <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px;">PUBLIC</div>
+              <div style="font-size:13px;color:var(--t2);">Listed on marketplace. Anyone can call via API. Prompt encrypted and hidden. Great for broad distribution.</div>
+            </div>
+            <div style="background:var(--bg3);border-radius:8px;padding:14px;">
+              <div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:6px;">PRIVATE</div>
+              <div style="font-size:13px;color:var(--t2);">Unlisted. Only consumers you approve can access. Perfect for enterprise/B2B skill licensing.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;">
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div style="width:44px;height:44px;border-radius:12px;background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">📋</div>
+        <div style="flex:1;">
+          <h3 style="margin-bottom:6px;">Layer 3 — Terms of Service + Legal</h3>
+          <p>Consumer ToS explicitly prohibits reverse-engineering, prompt extraction, or reproduction of skill behavior. Violations result in immediate API key revocation and legal liability. asquad acts as the enforcement layer between provider and consumer.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;">
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div style="width:44px;height:44px;border-radius:12px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">⭐</div>
+        <div style="flex:1;">
+          <h3 style="margin-bottom:6px;">Layer 4 — Reputation Moat (Economic)</h3>
+          <p style="margin-bottom:12px;">Even if someone copies a prompt, they can't copy the reputation. A skill with 500 five-star reviews from verified users is worth infinitely more than an unverified copy. Reviews, usage count, and provider verification create an economic moat that's impossible to clone.</p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <div style="background:var(--bg3);border-radius:8px;padding:12px 16px;text-align:center;">
+              <div style="font-size:20px;font-weight:800;color:var(--amber);">★ 4.9</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:2px;">512 reviews</div>
+            </div>
+            <div style="background:var(--bg3);border-radius:8px;padding:12px 16px;text-align:center;">
+              <div style="font-size:20px;font-weight:800;color:var(--green);">48K</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:2px;">API calls</div>
+            </div>
+            <div style="background:var(--bg3);border-radius:8px;padding:12px 16px;text-align:center;">
+              <div style="font-size:20px;font-weight:800;color:var(--accent);">✓</div>
+              <div style="font-size:11px;color:var(--t3);margin-top:2px;">Verified provider</div>
+            </div>
+            <div style="display:flex;align-items:center;font-size:13px;color:var(--t3);">← A copy has none of this</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;">
+      <div style="display:flex;gap:20px;align-items:flex-start;">
+        <div style="width:44px;height:44px;border-radius:12px;background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🔄</div>
+        <div style="flex:1;">
+          <h3 style="margin-bottom:6px;">Layer 5 — Continuous Versioning</h3>
+          <p>Providers can update their skill anytime. v1.0 → v1.1 → v2.0. Consumers always call the latest version automatically. A copied prompt becomes outdated the moment the original is improved. The provider who keeps iterating always stays ahead.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Summary -->
+  <div style="margin-top:24px;background:rgba(75,107,251,0.07);border:1px solid rgba(75,107,251,0.2);border-radius:16px;padding:24px;">
+    <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:8px;">The honest truth about prompt protection</div>
+    <p>No system can make a prompt completely uncopyable — just like no system makes software completely uncrackable. But the combination of encryption + legal ToS + reputation + versioning makes copying <strong style="color:var(--t1);">economically not worth it</strong>. The provider who builds reputation and keeps improving will always outcompete any copier.</p>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- REVIEW SYSTEM -->
+<section id="reviews">
+  <div class="section-label">Trust & Quality</div>
+  <h2>Reviews — the trust layer<br/>of the marketplace.</h2>
+  <p>Every great marketplace has reviews. For asquad, reviews serve three functions: consumer trust, provider quality incentive, and search ranking signal.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px;">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;">
+      <div style="font-size:24px;margin-bottom:12px;">👤</div>
+      <h3 style="font-size:15px;margin-bottom:8px;">For Consumers</h3>
+      <p style="font-size:13px;">Browse skills sorted by rating. Read what 200 other developers said about a legal skill before integrating it. Trust validated by real usage — not just marketing copy.</p>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;">
+      <div style="font-size:24px;margin-bottom:12px;">🏆</div>
+      <h3 style="font-size:15px;margin-bottom:8px;">For Providers</h3>
+      <p style="font-size:13px;">Quality = visibility = revenue. High ratings surface in search, featured placement, "Top Skill" badges. Incentivizes providers to maintain and improve their skills — not just upload and abandon.</p>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;">
+      <div style="font-size:24px;margin-bottom:12px;">🔍</div>
+      <h3 style="font-size:15px;margin-bottom:8px;">For Discovery</h3>
+      <p style="font-size:13px;">Reviews are a search signal. "Best legal contract reviewer" returns skills ranked by rating × usage × recency — not just keyword match. Quality floats to the top.</p>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div style="margin-top:32px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:28px;">
+    <div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:20px;">How the review flow works</div>
+    <div style="display:flex;align-items:center;gap:0;flex-wrap:wrap;justify-content:center;">
+      <div style="background:var(--bg3);border-radius:10px;padding:16px 20px;text-align:center;min-width:130px;">
+        <div style="font-size:20px;margin-bottom:6px;">📞</div>
+        <div style="font-size:12px;font-weight:700;color:var(--t1);">API Call</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px;">Consumer calls skill</div>
+      </div>
+      <div style="font-size:20px;color:var(--accent);padding:0 10px;">→</div>
+      <div style="background:var(--bg3);border-radius:10px;padding:16px 20px;text-align:center;min-width:130px;">
+        <div style="font-size:20px;margin-bottom:6px;">✅</div>
+        <div style="font-size:12px;font-weight:700;color:var(--t1);">Response</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px;">Result returned</div>
+      </div>
+      <div style="font-size:20px;color:var(--accent);padding:0 10px;">→</div>
+      <div style="background:var(--bg3);border-radius:10px;padding:16px 20px;text-align:center;min-width:130px;">
+        <div style="font-size:20px;margin-bottom:6px;">⭐</div>
+        <div style="font-size:12px;font-weight:700;color:var(--t1);">Rate (optional)</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px;">1–5★ + comment</div>
+      </div>
+      <div style="font-size:20px;color:var(--accent);padding:0 10px;">→</div>
+      <div style="background:rgba(75,107,251,0.1);border:1px solid rgba(75,107,251,0.3);border-radius:10px;padding:16px 20px;text-align:center;min-width:130px;">
+        <div style="font-size:20px;margin-bottom:6px;">📈</div>
+        <div style="font-size:12px;font-weight:700;color:var(--accent);">Search Rank</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px;">Rating updates ranking</div>
+      </div>
+    </div>
+
+    <!-- Example review card -->
+    <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px;">
+      <div style="font-size:12px;font-weight:700;color:var(--t3);letter-spacing:0.05em;margin-bottom:14px;">EXAMPLE REVIEW</div>
+      <div style="background:var(--bg3);border-radius:10px;padding:16px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(75,107,251,0.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--accent);flex-shrink:0;">D</div>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+            <span style="font-size:13px;font-weight:600;color:var(--t1);">dev@legaltech.io</span>
+            <span style="color:var(--amber);font-size:14px;">★★★★★</span>
+            <span style="font-size:11px;color:var(--t3);">Verified API user · 2,340 calls</span>
+          </div>
+          <p style="font-size:13px;margin-top:2px;">"Integrated this into our contract review pipeline. Catches issues our in-house legal team missed. The jurisdiction-specific flagging is exceptional — clearly written by an actual attorney, not a developer guessing."</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- TRACTION -->
+<section id="traction">
+  <div class="section-label">Traction</div>
+  <h2>Built and live in 6 sprints.</h2>
+  <p>End-to-end marketplace with real skill execution, in weeks — not months.</p>
+
+  <div class="roadmap" style="margin-top:48px;">
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><div class="time">Sprint 1–2</div></div>
+      <div class="roadmap-dot done"></div>
+      <div class="roadmap-content">
+        <h3>Core Infrastructure + Metering</h3>
+        <p>FastAPI backend, Next.js frontend, PostgreSQL, A2A gateway, JWT auth, rate limiting (60 RPM), call metering.</p>
+        <div class="roadmap-tags"><span class="tag done">✓ A2A Gateway</span><span class="tag done">✓ Auth</span><span class="tag done">✓ Rate Limiting</span></div>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><div class="time">Sprint 3–4</div></div>
+      <div class="roadmap-dot done"></div>
+      <div class="roadmap-content">
+        <h3>Marketplace + Dashboards</h3>
+        <p>Search, filtering by category, agent detail pages, provider/consumer dashboards connected to real API data, 10 demo agents.</p>
+        <div class="roadmap-tags"><span class="tag done">✓ Marketplace</span><span class="tag done">✓ Search</span><span class="tag done">✓ Dashboards</span></div>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><div class="time">Sprint 5</div></div>
+      <div class="roadmap-dot done"></div>
+      <div class="roadmap-content">
+        <h3>Railway Migration + UX Unification</h3>
+        <p>Migrated from Supabase → Railway PostgreSQL. Unified provider/consumer into single account. asquad.ai domain live.</p>
+        <div class="roadmap-tags"><span class="tag done">✓ Railway PostgreSQL</span><span class="tag done">✓ Single Account</span><span class="tag done">✓ asquad.ai Live</span></div>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><div class="time">Sprint 6</div></div>
+      <div class="roadmap-dot done"></div>
+      <div class="roadmap-content">
+        <h3>First Real Skill Agents + Provider Upload</h3>
+        <p>Claude Haiku integration. Code Reviewer and PR Summarizer agents live with real LLM responses. Providers can upload skills via dashboard — no code required. Try It playground working end-to-end.</p>
+        <div class="roadmap-tags"><span class="tag done">✓ Claude Haiku</span><span class="tag done">✓ Skill Upload (No Code)</span><span class="tag done">✓ Live Playground</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="section-label">Roadmap</div>
+  <h2>From marketplace to<br/>agent infrastructure.</h2>
+
+  <div class="roadmap" style="margin-top:48px;">
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><div class="time">Q3 2026</div><div class="phase">Now</div></div>
+      <div class="roadmap-dot" style="background:var(--accent);"></div>
+      <div class="roadmap-content" style="border-color:rgba(75,107,251,0.4);">
+        <h3>Marketplace MVP Live</h3>
+        <p>Skill upload, Claude Haiku execution, Try It playground, API keys, real agents live. Start recruiting first 20 domain expert providers.</p>
+        <div class="roadmap-tags"><span class="tag accent">Provider Recruiting</span><span class="tag accent">50 Skills Goal</span><span class="tag accent">$0 → First Revenue</span></div>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><div class="time">Q4 2026</div></div>
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-content">
+        <h3>Billing + Developer Growth</h3>
+        <p>Stripe billing integration, provider monthly payout system, Python + Node SDK, developer docs, first paying customers. <strong style="color:var(--t1);">Agent review system</strong> — consumers rate skills 1–5★ after each call. High-rated skills surface higher in search. Trust signal for new consumers, quality incentive for providers.</p>
+        <div class="roadmap-tags"><span class="tag">Stripe Billing</span><span class="tag">Provider Payouts</span><span class="tag">SDK</span><span class="tag">Agent Reviews ★</span><span class="tag">$1K MRR</span></div>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><div class="time">Q1 2027</div></div>
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-content">
+        <h3>MCP Server + A2A Registry</h3>
+        <p>asquad MCP server for Claude integration. A2A-compatible agent directory. Multi-LLM support (GPT-4o, Gemini). Consumer Path C unlocked. <strong style="color:var(--t1);">Skill Package Guided UI</strong> — form-based builder so non-developers (lawyers, doctors, analysts) can create complex skills without touching YAML or JSON. Prompt encryption + private mode for IP protection.</p>
+        <div class="roadmap-tags"><span class="tag">MCP Server</span><span class="tag">A2A Registry</span><span class="tag">Skill Package UI</span><span class="tag">Prompt Encryption</span><span class="tag">Private Mode</span><span class="tag">$10K MRR</span></div>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-phase"><div class="time">Q2–Q4 2027</div></div>
+      <div class="roadmap-dot"></div>
+      <div class="roadmap-content">
+        <h3>Enterprise + Platform Partnerships</h3>
+        <p>Enterprise tier with private skill deployment and SLA. IDE plugins (Cursor, Windsurf). Vertical SaaS partnerships as distribution.</p>
+        <div class="roadmap-tags"><span class="tag">Enterprise Tier</span><span class="tag">IDE Plugins</span><span class="tag">$1M ARR</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="section-label">Team</div>
+  <h2>Builders who ship.</h2>
+  <div class="team-row">
+    <div class="team-name">Jaeyoon Jung</div>
+    <div class="team-name">Ko Sangwon</div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<footer>
+  <div style="font-size:22px;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,#4B6BFB,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">asquad.ai</div>
+  <div style="color:var(--t3);">The Marketplace for AI Skills · 2026</div>
+  <div style="margin-top:8px;color:var(--t3);">jaeyoonjung85@gmail.com</div>
+</footer>
+
+</body>
+</html>

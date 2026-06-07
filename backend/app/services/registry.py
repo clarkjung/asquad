@@ -1,6 +1,7 @@
 import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from fastapi import HTTPException, status
 import uuid
 
@@ -78,7 +79,9 @@ async def create_agent(
 
 
 async def get_agent(db: AsyncSession, agent_id: uuid.UUID) -> Agent:
-    result = await db.execute(select(Agent).where(Agent.id == agent_id))
+    result = await db.execute(
+        select(Agent).where(Agent.id == agent_id).options(selectinload(Agent.provider))
+    )
     agent = result.scalar_one_or_none()
     if not agent:
         raise HTTPException(status_code=404, detail="Agent not found")
